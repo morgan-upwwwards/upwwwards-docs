@@ -1,0 +1,278 @@
+upwwwards Standard "No Charge" License
+======================================
+
+Copyright (c) 2026 Morgan Le Thuaut. All rights reserved.
+
+This license is a proprietary software license. It is not an open-source
+license (it is not OSI-approved). It is provided as a practical template
+inspired by common “standard use / no charge” models; it is not legal advice.
+Have counsel review it before relying on it commercially.
+
+
+I. DEFINITIONS
+
+  “License” means these terms.
+
+  “Copyright Holder” means Morgan Le Thuaut.
+
+  “Licensee” or “you” means the individual or legal entity exercising rights
+  under this License.
+
+  “Software” means the upwwwards library and any related packages, plugins,
+  tools, documentation, or materials made available by the Copyright Holder
+  under this License (including npm distributions and updates).
+
+  “Permitted Use” means implementing and/or using the Software, as provided,
+  in a website, web application, digital product, or similar end-user-facing
+  experience that you (or your client) own or operate — including commercial
+  projects — where the Software is a dependency or runtime of that experience.
+
+  Permitted Use also includes developing, distributing, and operating software
+  packages, libraries, frameworks, and developer tools that use the Software as
+  a dependency, provided that such products are not Competitive Products.
+
+  “Competitive Product” means a software product whose primary purpose
+  is to provide substantially similar functionality to the Software itself,
+  and which is marketed or distributed as a substitute for the Software.
+
+  A product shall not be considered a Competitive Product solely because
+  it uses the Software as a dependency, integrates its APIs, or provides
+  additional functionality built on top of the Software.
+
+
+II. GRANT OF LICENSE
+
+  Subject to this License, the Copyright Holder grants you a non-exclusive,
+  worldwide, royalty-free license to use, reproduce, display, and implement
+  the Software solely for Permitted Uses. This grant continues for so long as
+  this License remains in effect and is not terminated under Section VI.
+
+  You may modify the Software solely for your own internal use or for use in
+  a Permitted Use, provided that such modifications are not distributed as a
+  standalone library or as part of a Competitive Product. For clarity, this
+  permission includes maintaining private forks or modified copies of the
+  Software solely for internal use or for a Permitted Use.
+
+  You may distribute the Software as a dependency of your own software package
+  (for example, declaring it in package.json so that npm, pnpm, or yarn installs
+  it for consumers of your package), provided that:
+
+  (a) the Software is not redistributed as a standalone product;
+
+  (b) the Software is not modified for that redistribution (consumers must
+      receive the Software as published by the Copyright Holder, typically via
+      the official package registry entry);
+
+  (c) the distribution is solely intended to enable a Permitted Use; and
+
+  (d) the distribution does not grant recipients any rights beyond those
+      expressly granted under this License (recipients are licensed directly
+      under this License, not under broader terms of your package).
+
+  This dependency permission includes direct and transitive dependencies, as
+  well as Software bundled into or distributed with packages solely to enable
+  a Permitted Use. In all cases, the Software remains subject to this License
+  and may not be redistributed as a standalone product or Competitive Product.
+
+  No other rights are granted, whether by implication, estoppel, or otherwise.
+  In particular, except for the modification and dependency-distribution
+  rights above, this License does not grant you rights to create derivative
+  works for public or commercial distribution as a library, or to sublicense
+  the Software except as necessary to deliver a Permitted Use (for example,
+  bundling minified runtime code — including your Permitted Use modifications —
+  into your deployed website or application).
+
+
+III. RESTRICTIONS
+
+  You may not, without prior written consent of the Copyright Holder:
+
+  (a) use the Software for any purpose other than a Permitted Use;
+
+  (b) use the Software to develop, operate, or distribute a Competitive Product;
+
+  (c) fork, clone, or republish the Software’s source code as a separate
+      public project, package, or repository, or otherwise distribute a fork
+      or clone of the Software to third parties, except as expressly permitted
+      under Section II;
+
+  (d) modify the Software and distribute, publish, or sell the modified
+      version (or a substantial portion of it) to third parties, except as
+      expressly permitted under Section II for modifications included in a
+      Permitted Use deployment;
+
+  (e) reverse engineer, decompile, or disassemble the Software in order to
+      build a Competitive Product (interoperability analysis strictly limited
+      to integrating the Software into a Permitted Use is not restricted by
+      this clause where such restriction is prohibited by applicable law);
+
+  (f) remove, obscure, or alter any proprietary notices, copyright notices,
+      or branding included with the Software. This restriction does not require
+      displaying the Copyright Holder’s branding or trademarks in the user
+      interface of a Permitted Use deployment. Copyright and license notices
+      must be retained in the Software distribution or accompanying
+      documentation, where technically and reasonably practicable;
+
+  (g) redistribute the Software on a standalone basis (including republishing
+      it on package registries under another name or as a competing package),
+      except as expressly allowed by Section II for dependency distribution
+      or bundling inside a Permitted Use deployment.
+
+
+IV. OWNERSHIP
+
+  The Software is licensed, not sold. All right, title, and interest in and
+  to the Software — including copyrights, trademarks, trade secrets, and
+  other intellectual property — remain the exclusive property of the
+  Copyright Holder and its licensors. This License does not transfer any
+  ownership rights to you.
+
+
+V. NO WARRANTY
+
+  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL
+  THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT
+  OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+
+
+VI. TERMINATION
+
+  This License may be terminated only as expressly provided in this Section VI.
+  The Copyright Holder may not revoke the License at its discretion for users
+  who remain in compliance with its terms.
+
+  (a) Notice and cure. If you breach this License, the Copyright Holder may
+      terminate it only after giving you written notice describing the breach
+      with reasonable particularity and allowing a cure period of thirty (30)
+      days (or longer if stated in the notice). If you cure the breach within
+      that period, this License does not terminate by reason of that notice.
+
+  (b) Effect of termination. If this License terminates under Section VI(a)
+      because the breach was not cured in time, then, except as provided in
+      Section VI(c), you must cease new use of the Software and destroy copies
+      in your possession that are not covered by Section VI(c).
+
+  (c) Grandfathered Permitted Uses. Termination does not require you to
+      recall, disable, or rebuild:
+        (i)   websites, applications, or other products already delivered to
+              a client or end users under a Permitted Use before termination;
+        (ii)  production deployments already live under a Permitted Use before
+              termination; or
+        (iii) copies of a specific Software version you lawfully obtained and
+              embedded in such delivered or published work before termination.
+
+      For those grandfathered artifacts only, the rights needed to keep them
+      running under a Permitted Use continue on a perpetual, royalty-free basis
+      even after termination, and do not require a new license grant. Ordinary
+      maintenance of those artifacts is included and may cover bug fixes,
+      security updates to dependencies, rebuilds for updated toolchains (for
+      example a newer Node.js or bundler), and other changes reasonably
+      necessary to keep an already delivered or already live project operating
+      as previously shipped. That maintenance right does not authorize new
+      projects, new distributions, or using the Software to start work that was
+      not already covered under Section VI(c)(i)–(iii) before termination.
+
+  (d) Survival. Sections IV, V, VI, and VII survive termination.
+
+
+VII. MISCELLANEOUS
+
+  (a) Amendments. The Copyright Holder may update this License by publishing a
+      revised text with the Software.
+
+        (i)   Versions you already obtained remain under the License terms that
+              applied when you obtained them.
+
+        (ii)  New Software versions first published after revised terms are
+              published are offered under those revised terms. By downloading,
+              installing, or using such a later version, you accept the then-
+              current terms for that version only (to the extent such acceptance
+              is recognized under applicable law).
+
+        (iii) Patch, bug-fix, or security releases that the Copyright Holder
+              expressly designates as continuing under the same License text as
+              a prior version may be obtained and used under that prior text,
+              even if a newer License text exists for other releases.
+
+      Nothing in this Section VII(a) allows the Copyright Holder to re-license,
+      by amendment alone, a Software version you already lawfully obtained.
+
+  (b) Entire agreement. This License constitutes the entire agreement regarding
+      the Software, unless you have a separate written agreement with the
+      Copyright Holder that expressly supersedes it.
+
+  (c) Severability. If any provision is held unenforceable, the remainder stays
+      in effect.
+
+  (d) No waiver. Failure to enforce any provision is not a waiver of future
+      enforcement.
+
+  (e) Governing law and jurisdiction. This License is governed by the laws of
+      France, excluding its conflict-of-law rules. Any dispute arising out of or
+      in connection with this License shall be submitted to the competent courts
+      of France, subject to any mandatory rules of jurisdiction and applicable
+      consumer protection laws.
+
+
+FAQ (informative only; does not modify the License)
+---------------------------------------------------
+
+  Q: Can I use upwwwards in a paid client website or SaaS product UI?
+  A: Yes — that is a Permitted Use, including commercial projects.
+
+  Q: Can AI tools generate code that calls upwwwards APIs?
+  A: Yes. Generating integration code for a Permitted Use is fine. Shipping a
+     Competitive Product or republishing the Software source is not.
+
+  Q: If the License is terminated, do my client sites have to go offline?
+  A: No. Section VI(c) grandfathers delivered and already-published Permitted
+     Uses (and the Software versions embedded in them). Termination stops new
+     use and new projects, after notice and an uncured breach.
+
+  Q: Can I patch or fork the Software for my own app?
+  A: Yes. Section II allows private forks and modifications for internal use or
+     a Permitted Use (including shipping those mods inside a client deployment).
+     Publishing a public fork or alternate package is not allowed.
+
+  Q: Must client sites show upwwwards branding?
+  A: No. Section III(f) keeps copyright/license notices in the distribution
+     where practicable, but does not require UI trademarks or branding.
+
+  Q: Can my npm package (e.g. my-framework) depend on upwwwards?
+  A: Yes. Section II allows distributing the Software as a dependency of your
+     own package so installs pull the official upwwwards package, provided it
+     enables a Permitted Use, is not a Competitive Product, and is not a
+     modified or rebranded standalone republish of the Software.
+
+  Q: If my package is MIT (or another OSS license), does that open-source
+     upwwwards?
+  A: No. Section II(d) is clear: recipients of your package are licensed for
+     the Software only under this License, not under broader terms of your
+     package. Publishing an MIT (or similar) wrapper that depends on upwwwards
+     does not make upwwwards open source; your users must still comply with
+     this License for the Software itself.
+
+  Q: Is the license perpetual for my client’s shipped site?
+  A: For grandfathered delivered / already-live Permitted Uses, Section VI(c)
+     keeps the rights needed to run those artifacts perpetual and royalty-free,
+     even if your License later terminates. That does not cover new projects
+     after termination.
+
+  Q: What counts as a Competitive Product?
+  A: A package that mainly reproduces upwwwards’ functionality and is marketed
+     as a substitute can be competitive. A package that depends on upwwwards to
+     add complementary features (for example a larger site framework, router,
+     or UI toolkit that uses upwwwards for page lifecycle / animation) is not
+     automatically a Competitive Product solely for that reason.
+
+  Q: What is allowed at a glance?
+  A: Use in client/commercial sites: yes. Private patches for your project: yes.
+     npm package depending on upwwwards: yes. Distributed modified fork: no.
+     Competing / rebranded standalone package: no.
+
+  Q: Is this MIT / Apache / GPL?
+  A: No. This is a proprietary no-charge standard-use license.

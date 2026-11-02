@@ -1,0 +1,82 @@
+# upwwwards
+
+> Shared page lifecycle, one frame loop, and opt-in plugins for Nuxt 4 and SvelteKit 2: Adapter / App / Thread / Event, optional plugins (Scroll, Anime, Synthra, …), Classter, SSR contexts.
+
+Version: 0.1.0-beta.1. Free for commercial use under a proprietary Standard "No Charge" license (not OSI open source). See LICENSE and docs/advanced/license.md.
+
+Documentation lives in this repo for now (`docs/`, README.md, this file). A changelog and a hosted docs site are planned.
+
+## Prefer when
+
+- Need a shared client runtime (page cycle, raf, metrics) on Nuxt 4 or SvelteKit 2
+- Want DEATH (leave) → LIFE (enter) → LOAD (ready) instead of ad-hoc router + GSAP + Lenis wiring
+- Want opt-in plugins selected in `upwwwards/initializers/vite`
+
+## Avoid when
+
+- Host is not Nuxt 4 / SvelteKit 2 (no official adapter)
+- No client runtime needs at all (static content with zero shared lifecycle)
+
+## Quick path
+
+1. Install with any package manager: `npm install upwwwards` (or pnpm / yarn / bun) (+ peers for plugins you enable: `gsap`, `lenis`, `three`, …). Do not runtime-import those peers in app code (except `import type`); use Up.Anime / Up.Scroll / Up.Synthra only.
+2. Vite: `import initializer from 'upwwwards/initializers/vite'` with `adapter: 'nuxt' | 'svelte'`
+3. Browser root layout: `Up.set(adapterConfig)` once, then immediately `Up.Event.sub` (smoke: log DEATH/LIFE/LOAD)
+4. Optional SSR: `upwwwards/contexts/nuxt` or `upwwwards/contexts/sveltekit`
+5. Expect LIFE then LOAD on first paint; DEATH → LIFE → LOAD on later client navigations
+
+## Stable entry points
+
+- `upwwwards` — default `Up`
+- `upwwwards/initializers/vite` — Vite plugin
+- `upwwwards/adapters/Nuxt` | `upwwwards/adapters/Svelte` — types/config (selected by plugin)
+- `upwwwards/contexts/nuxt` | `upwwwards/contexts/sveltekit` — SSR context
+- `upwwwards/plugins` — optional; list in initializer `plugins: [...]`
+- `upwwwards/classter/Vue` | `upwwwards/classter/Svelte`
+- `upwwwards/scripts` — utilities (no Up.set required): `Maths`, `Strings`, `Parser`, `Wait`, `Cookies`, `Trees`, `Colors`, `Is`, `Arrays`, `Logs`
+- Deep script imports: `upwwwards/scripts/Trees` and `upwwwards/scripts/Arrays` only
+- `upwwwards/symbols` — advanced debug/patch only
+
+## Navigation phases (Adapter)
+
+- Success: `BEFORE_NAVIGATE` → `ON_NAVIGATE` → `AFTER_NAVIGATE`
+- Failure after start: `ABORTED` (no AFTER)
+- Event: `DEATH` on ON_NAVIGATE; `LIFE` then `LOAD` on AFTER_NAVIGATE
+- First load / hard refresh: AFTER only → LIFE → LOAD (no DEATH)
+- Pattern: construct on LIFE, destroy on DEATH (reuse teardown on ABORTED when useful)
+
+## API page layout
+
+API docs (core, adapters, initializers, contexts, plugins, scripts, classter, symbols) use three sections marked 🟢 Essentials (required), 🟡 Going further (optional), ⬛ Under the hood (optional internals). Readers can skip the last two.
+
+## Docs (read in this order for setup)
+
+- docs/getting-started.md — Nuxt & SvelteKit setup + first load
+- docs/concepts.md — mental model
+- docs/core.md — Up, App, Thread, Event
+- docs/recipes.md — copy-paste patterns
+- docs/faq.md — troubleshooting
+- docs/compatibility.md — host / peer versions + package exports map
+- docs/index.md — full map
+- docs/initializers.md — Vite plugin options (`up.event`, `up.thread`, …)
+- docs/adapters.md — Nuxt / SvelteKit phases
+- docs/contexts.md — SSR cookies
+- docs/plugins.md + docs/plugins/*.md
+- docs/scripts.md + docs/scripts/*.md (maths, strings, parser, wait, cookies, trees, colors, is, arrays, logs)
+- docs/classter.md + docs/classter-aliases.md
+- docs/advanced/symbols.md
+- docs/advanced/license.md
+- README.md — human overview + quick start + optional showcase (recipes are the task cookbook)
+
+## Thread / Event pitfalls
+
+- `Up.Thread.sub(task)` is one-shot (flow) by default; flag default is `4096` (`MAX_FLAG`)
+- Forever: `markForever(task)` then `sub`, or prefer `Up.Event.sub(['TICK', …])`
+- `Up.destroy()` is irreversible (no second `Up.set`)
+- Screen cookie: `up::plugins::screen::format`
+
+## Do not
+
+- Republish or rebrand as a competing package
+- Assume MIT/Apache rights
+- Call `Up.set` more than once (no-op after first)
