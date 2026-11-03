@@ -48,7 +48,7 @@ Optional catalog.
 
 | Symbol | Role |
 | --- | --- |
-| `INHERITANCE` | Shared stack `[Adapter, App, Thread, Event, Up]` on core modules |
+| `INHERITANCE` | Shared HRT stack `[Adapter, App, Thread, Event]` on the `Hrt` instance and each core module (typed view; each module hydrates its predecessor, not itself) |
 | `STATUS` | Thread run state; Nuxt adapter nav cycle; lazy plugin load state |
 | `SIGN` | Lazy plugin identity |
 | `QUEUE` / `CACHE` / `WAIT` | Lazy plugin pending callbacks / guards / load promise |
