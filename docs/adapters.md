@@ -110,7 +110,7 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 
 **Nuxt:** route middleware that calls `abortNavigation()` **before** this adapter’s `beforeEach` never starts the Adapter cycle (no `BEFORE` / `ABORTED` from upwwwards). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
 
-**Nuxt + page transitions:** without transitions, `page:finish` drives `AFTER`. With `app.pageTransition`, after the first `page:transition:finish` the adapter can switch to that hook.
+**Nuxt + page transitions:** `AFTER` still starts from `page:finish`. On client navigations the adapter also `await`s Nuxt’s internal `~transitionPromise` when present (same gate as Nuxt scroll / `page:transition:finish`; `await undefined` is a no-op without transitions), then a `nextTick`, so `out-in` does not emit `AFTER` too early. First load skips that wait. Call `Up.set` synchronously in a Nuxt setup so `useNuxtApp()` resolves.
 
 ---
 
@@ -125,7 +125,7 @@ Optional. Exact sources of each phase — for debugging navigation.
 | Phase | Source |
 | --- | --- |
 | `BEFORE` + `ON` | Same turn in `router.beforeEach` when `path` changes |
-| `AFTER` | `page:finish` by default; may switch to `page:transition:finish` |
+| `AFTER` | `page:finish` → on client navs `await ~transitionPromise` (if any) → `nextTick` → emit |
 | `ABORTED` | `router.afterEach` with a failure, only if a cycle was in progress |
 
 ### SvelteKit (`adapter: 'svelte'`)

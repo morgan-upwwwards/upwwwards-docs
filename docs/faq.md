@@ -66,7 +66,7 @@ If middleware calls `abortNavigation()` **before** the adapter’s `beforeEach`,
 
 ### Nuxt: `AFTER_NAVIGATE` timing with page transitions
 
-Without transitions, `page:finish` drives `AFTER`. With `app.pageTransition`, after the first `page:transition:finish` the adapter can switch to that hook.
+`page:finish` alone can fire before the new page’s `onMounted` when `pageTransition` is set (especially `mode: 'out-in'`). On client navigations the adapter `await`s Nuxt’s `~transitionPromise` when Nuxt set one (resolved on leave / same gate as Nuxt scroll), then flushes with `nextTick` before `AFTER`. First load skips that wait so a dangling first-paint promise cannot block boot.
 
 ### SvelteKit: when do I pass `beforeNavigate` / `onNavigate` / `afterNavigate`?
 
