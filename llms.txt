@@ -21,7 +21,7 @@ Documentation lives in this repo for now (`docs/`, README.md, this file). A chan
 
 1. Install with any package manager: `npm install upwwwards` (or pnpm / yarn / bun) (+ peers for plugins you enable: `gsap`, `lenis`, `three`, …). Do not runtime-import those peers in app code (except `import type`); use Up.Anime / Up.Scroll / Up.Synthra only.
 2. Vite: `import initializer from 'upwwwards/initializers/vite'` with `adapter: 'nuxt' | 'svelte'`
-3. Browser root layout: `Up.set(adapterConfig)` once, then immediately `Up.Event.sub` (smoke: log DEATH/LIFE/LOAD)
+3. Browser root layout: `Up.set()` once (Nuxt) or `Up.set({ beforeNavigate, onNavigate, afterNavigate })` (SvelteKit), then immediately `Up.Event.sub` (smoke: log DEATH/LIFE/LOAD)
 4. Optional SSR: `upwwwards/contexts/nuxt` or `upwwwards/contexts/sveltekit`
 5. Expect LIFE then LOAD on first paint; DEATH → LIFE → LOAD on later client navigations
 

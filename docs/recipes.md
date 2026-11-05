@@ -174,7 +174,7 @@ Also: [README showcase](../README.md#showcase-anime) · [Anime](plugins/anime.md
 
 ### Nuxt `pageTransition` + lifecycle
 
-With `app.pageTransition` (or page meta / `NuxtPage` transition), the Nuxt adapter still listens to `page:finish` but, on client navigations, awaits Nuxt’s `~transitionPromise` when present so `AFTER_NAVIGATE` / `LIFE` are not early under `out-in`.
+With `app.pageTransition` (or page meta / `NuxtPage` transition), `AFTER_NAVIGATE` / `LIFE` still run when the new page is ready — including under `out-in`. No extra wiring beyond the usual `Up.set` in the root layout.
 
 ```ts
 Up.Event.sub([

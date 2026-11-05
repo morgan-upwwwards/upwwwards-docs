@@ -60,13 +60,13 @@ Listen to `Up.Adapter` **`ABORTED`** and run the same teardown as `DEATH` if you
 
 ### Nuxt: I aborted in middleware but saw no `BEFORE` / `ABORTED`
 
-If middleware calls `abortNavigation()` **before** the adapter’s `beforeEach`, the Adapter cycle never starts. Guards registered **after** `Up.set` can abort after `BEFORE`/`ON`.
+If middleware calls `abortNavigation()` **before** the adapter has wired navigation, the Adapter cycle never starts. Guards registered **after** `Up.set` can abort after `BEFORE`/`ON`.
 
 → [adapters](adapters.md)
 
 ### Nuxt: `AFTER_NAVIGATE` timing with page transitions
 
-`page:finish` alone can fire before the new page’s `onMounted` when `pageTransition` is set (especially `mode: 'out-in'`). On client navigations the adapter `await`s Nuxt’s `~transitionPromise` when Nuxt set one (resolved on leave / same gate as Nuxt scroll), then flushes with `nextTick` before `AFTER`. First load skips that wait so a dangling first-paint promise cannot block boot.
+With `app.pageTransition` (including `out-in`), `AFTER` / `LIFE` still wait until the new page is ready — nothing extra to configure. Call `Up.set` once in a root layout setup.
 
 ### SvelteKit: when do I pass `beforeNavigate` / `onNavigate` / `afterNavigate`?
 

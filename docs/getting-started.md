@@ -73,14 +73,13 @@ Call it once in the browser. A second call is a no-op.
 
 ### Nuxt — e.g. `app/layouts/default.vue`
 
+Call once in the layout’s `<script setup>` (Nuxt setup context). Config is optional — only `rootSelector` if you need a custom app root.
+
 ```vue
 <script lang="ts" setup>
 import Up from 'upwwwards'
 
-const router = useRouter()
-const { hook } = useNuxtApp()
-
-Up.set({ hook, router })
+Up.set()
 </script>
 
 <template>

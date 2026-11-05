@@ -36,12 +36,11 @@ Event lifecycle: [core — Essentials](core.md#essentials).
 
 ### `Up.set` config by host
 
-**Nuxt** — `{ hook, router, rootSelector? }`
+**Nuxt** — call once in a root layout `<script setup>`. No host APIs to pass; optional `{ rootSelector? }` only.
 
 ```ts
-const router = useRouter()
-const { hook } = useNuxtApp()
-Up.set({ hook, router })
+Up.set()
+// or: Up.set({ rootSelector: '#app' })
 ```
 
 **SvelteKit** — `{ beforeNavigate, onNavigate, afterNavigate, rootSelector? }`  
@@ -108,9 +107,9 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 
 ### Host caveats
 
-**Nuxt:** route middleware that calls `abortNavigation()` **before** this adapter’s `beforeEach` never starts the Adapter cycle (no `BEFORE` / `ABORTED` from upwwwards). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
+**Nuxt:** call `Up.set` in a layout/setup context. Route middleware that aborts **before** the adapter has wired navigation never starts the Adapter cycle (no `BEFORE` / `ABORTED`). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
 
-**Nuxt + page transitions:** `AFTER` still starts from `page:finish`. On client navigations the adapter also `await`s Nuxt’s internal `~transitionPromise` when present (same gate as Nuxt scroll / `page:transition:finish`; `await undefined` is a no-op without transitions), then a `nextTick`, so `out-in` does not emit `AFTER` too early. First load skips that wait. Call `Up.set` synchronously in a Nuxt setup so `useNuxtApp()` resolves.
+**Nuxt + `pageTransition`:** `AFTER_NAVIGATE` / `LIFE` wait until the new page is ready for work — including when you use page transitions (e.g. `out-in`). No extra app code required.
 
 ---
 
@@ -124,9 +123,9 @@ Optional. Exact sources of each phase — for debugging navigation.
 
 | Phase | Source |
 | --- | --- |
-| `BEFORE` + `ON` | Same turn in `router.beforeEach` when `path` changes |
-| `AFTER` | `page:finish` → on client navs `await ~transitionPromise` (if any) → `nextTick` → emit |
-| `ABORTED` | `router.afterEach` with a failure, only if a cycle was in progress |
+| `BEFORE` + `ON` | Client path change (wired by the adapter) |
+| `AFTER` | New page ready (respects `pageTransition` when configured) |
+| `ABORTED` | Failed navigation after the cycle started |
 
 ### SvelteKit (`adapter: 'svelte'`)
 

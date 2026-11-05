@@ -58,10 +58,7 @@ export default defineNuxtConfig({
 <script lang="ts" setup>
 import Up from 'upwwwards'
 
-const router = useRouter()
-const { hook } = useNuxtApp()
-
-Up.set({ hook, router })
+Up.set()
 
 Up.Event.sub([
   ['DEATH', () => console.log('DEATH')],
