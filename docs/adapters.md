@@ -36,11 +36,11 @@ Event lifecycle: [core — Essentials](core.md#essentials).
 
 ### `Up.set` config by host
 
-**Nuxt** — call once in a root layout `<script setup>`. No host APIs to pass; optional `{ rootSelector? }` only.
+**Nuxt** — `{ nuxtApp, rootSelector? }` once in a root layout `<script setup>`.
 
 ```ts
-Up.set()
-// or: Up.set({ rootSelector: '#app' })
+Up.set({ nuxtApp: useNuxtApp() })
+// or: Up.set({ nuxtApp: useNuxtApp(), rootSelector: '#app' })
 ```
 
 **SvelteKit** — `{ beforeNavigate, onNavigate, afterNavigate, rootSelector? }`  
@@ -107,7 +107,7 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 
 ### Host caveats
 
-**Nuxt:** call `Up.set` in a layout/setup context. Route middleware that aborts **before** the adapter has wired navigation never starts the Adapter cycle (no `BEFORE` / `ABORTED`). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
+**Nuxt:** call `Up.set({ nuxtApp: useNuxtApp() })` in a layout/setup context. Route middleware that aborts **before** the adapter has wired navigation never starts the Adapter cycle (no `BEFORE` / `ABORTED`). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
 
 **Nuxt + `pageTransition`:** `AFTER_NAVIGATE` / `LIFE` wait until the new page is ready for work — including when you use page transitions (e.g. `out-in`). No extra app code required.
 

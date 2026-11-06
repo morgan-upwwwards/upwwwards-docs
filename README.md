@@ -58,7 +58,7 @@ export default defineNuxtConfig({
 <script lang="ts" setup>
 import Up from 'upwwwards'
 
-Up.set()
+Up.set({ nuxtApp: useNuxtApp() })
 
 Up.Event.sub([
   ['DEATH', () => console.log('DEATH')],

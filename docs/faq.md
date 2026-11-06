@@ -66,7 +66,7 @@ If middleware calls `abortNavigation()` **before** the adapter has wired navigat
 
 ### Nuxt: `AFTER_NAVIGATE` timing with page transitions
 
-With `app.pageTransition` (including `out-in`), `AFTER` / `LIFE` still wait until the new page is ready — nothing extra to configure. Call `Up.set` once in a root layout setup.
+With `app.pageTransition` (including `out-in`), `AFTER` / `LIFE` still wait until the new page is ready — nothing extra to configure. Call `Up.set({ nuxtApp: useNuxtApp() })` once in a root layout setup.
 
 ### SvelteKit: when do I pass `beforeNavigate` / `onNavigate` / `afterNavigate`?
 
