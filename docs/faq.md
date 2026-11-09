@@ -90,7 +90,11 @@ Expected: default tasks are **flow** (one-shot). For every frame, `Up.Thread.mar
 
 ### Memory leaks after navigation
 
-Always **unsub** with the **same function references** you passed to `Event.sub` / `Adapter.sub` / `Thread.sub` / `Observer.sub` / `Anime.unsub(key)`. Cancel `Wait.throttle` / `debounce` wrappers with `Wait.cancel`.
+Always **unsub** with the **same function references** you passed to `Event.sub` / `Adapter.sub` / `Thread.sub` / `Observer.sub` / `Anime.unsub(key)` — including Event handlers registered with `{ once: true }` if you tear down early. Cancel `Wait.throttle` / `debounce` wrappers with `Wait.cancel`.
+
+### How do I run an Event handler only once?
+
+`Up.Event.sub(['LOAD', handler, { once: true }])` — fires once for that key, then unsubscribes. (DOM targets use native `AddEventListenerOptions.once` instead.) — [core](core.md#page-cues--upevent).
 
 ### Can I use scripts without the Vite plugin?
 

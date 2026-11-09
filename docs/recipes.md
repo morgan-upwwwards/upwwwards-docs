@@ -32,6 +32,16 @@ Up.Event.sub([
 
 `LOAD` also waits on static files after `LIFE`. Options: `up.event.staticFilesConfig` in [initializers](initializers.md).
 
+### Run a handler once
+
+```ts
+Up.Event.sub(['LOAD', () => {
+  /* first ready only — then auto-unsub */
+}, { once: true }])
+```
+
+Same function reference for a manual `unsub` if you leave before it fires. Details: [core — Event](core.md#page-cues--upevent).
+
 ### Component-scoped subscriptions (Nuxt / Vue)
 
 ```vue

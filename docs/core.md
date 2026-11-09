@@ -69,9 +69,15 @@ Up.Event.unsub([
 ])
 ```
 
+Optional third field `{ once: true }` — the handler runs **once** for that key, then unsubscribes itself (still `unsub` with the same function if you tear down early):
+
+```ts
+Up.Event.sub(['LOAD', () => console.log('ready'), { once: true }])
+```
+
 `LIFE` / `LOAD` subscribers receive a **Promise** that resolves when every subscriber for that phase has finished. `DEATH` runs synchronously and takes no args.
 
-Always **unsub** with the same function references when the component goes away. Event listeners are **client-only**.
+Always **unsub** with the same function references when the component goes away (including handlers registered with `once`). Event listeners are **client-only**.
 
 ### Wire the host — `Up.set` and `Up.Adapter`
 
@@ -187,7 +193,7 @@ Up.Event.sub(['click', onClick, Up.Event.PASSIVE], document.body)
 Up.Event.unsub(['click', onClick], document.body)
 ```
 
-`Up.Event.PASSIVE` / `IMPASSIVE` are ready-made options objects.
+`Up.Event.PASSIVE` / `IMPASSIVE` are ready-made **DOM** options objects (`AddEventListenerOptions`). They are not the Event-manager `{ once: true }` ticket option — that third field only applies when you omit the DOM `subscriber`.
 
 ### Extra App metrics and cache notes
 
@@ -251,7 +257,8 @@ Budgets: [initializers — `up.thread`](initializers.md#upthread).
 ### Event subtleties
 
 - Subscribers of a given key run in **reverse subscription order**. Duplicate `(key, callback)` pairs are ignored.  
-- **Immediate one-shot (not stored):** if you `sub` an unknown / unregistered key, or `LOAD` after the current `LOAD` phase has already started, the callback runs **once** with no args and is **not** kept.  
+- **`{ once: true }`:** runs once for that key, then auto-unsubscribes. Unrelated to the bullet below.  
+- **Immediate one-shot (not stored):** if you `sub` an unknown / unregistered key, or `LOAD` after the current `LOAD` phase has already started, the callback runs **immediately** with no args and is **not** kept.  
 - `LIFE` / `LOAD` Promise args are useful for chaining; you can ignore them.
 
 ---

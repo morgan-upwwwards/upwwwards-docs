@@ -72,6 +72,8 @@ API docs (core, adapters, initializers, contexts, plugins, scripts, classter, sy
 
 - `Up.Thread.sub(task)` is one-shot (flow) by default; flag default is `4096` (`MAX_FLAG`)
 - Forever: `markForever(task)` then `sub`, or prefer `Up.Event.sub(['TICK', …])`
+- Event ticket `{ once: true }` (third field, Event manager only): run once per key then auto-unsub; unsub still uses the same function ref
+- DOM `Event.sub(..., element)` third field is `AddEventListenerOptions`, not Event `{ once: true }`
 - `Up.destroy()` is irreversible (no second `Up.set`)
 - Screen cookie: `up::plugins::screen::format`
 
