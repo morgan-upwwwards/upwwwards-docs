@@ -145,7 +145,7 @@ The trigger should be **taller than the viewport** (`100lvh`); otherwise the ran
 | `getOverflowStart` / `getOverflowEnd` | `() => number` px; re-read on refresh |
 | `eEnter` / `eEnterBack` / `eLeave` / `eLeaveBack` | Replaces forbidden native `onEnter` / … |
 | `eUpdate(progress)` | Progress `0`–`1` after track callbacks |
-| `eRefresh` | Reserved — see [Under the hood](#under-the-hood) |
+| `eRefresh` | After each ScrollTrigger refresh, once overflows / animations / tracks are recomputed |
 | `name` | Debug label |
 
 Native `onEnter` / `onUpdate` / `onRefresh` / … are **typed as `never`** — use the `e*` hooks.
@@ -166,6 +166,8 @@ Four mutually exclusive forms (fractions `0`–`1`):
 **`addAnimation`:** types `'F'` / `'T'` / `'F/T'`. Do **not** set `duration` — derived from placement. Chainable.
 
 **`addTrack`:** logical segment without a tween (`eEnter` / `eLeave` / `eUpdate` / `eDestroy`). Higher `priority` wins when several tracks update one object; `skipped: true` means the track was jumped — apply final state without animating.
+
+**`update()`:** waits for pending fragment updates and the first ScrollTrigger refresh, then forces a track re-evaluation from the **last notified** progress to the live scrub progress (e.g. after adding tracks). Mid-scroll restore catch-up from `0` is done on that first refresh, not by `update()` itself. Does nothing if `Up.App.y` is still before the timeline start. Warns and returns if the timeline is not configured.
 
 ```ts
 Up.Anime.sub(KEY, ({ Timeline }) => {
@@ -210,11 +212,11 @@ With Lenis: [Scroll — Going further](scroll.md#with-anime--scrolltrigger).
 - With **Scroll** enabled, Lenis arms flag `32` so ScrollTrigger modifiers stay in sync without a manual Lenis `scroll` listener.  
 - `unsub` runs `cleaningStack` in reverse, then `ctx.revert()`.  
 - Helpers created inside `sub` push destroyers onto `workspace.cleaningStack`.  
-- **Known limitation:** `Timeline` accepts `eRefresh`, but it is stored and **not called yet**. Use `getOverflowStart` / `getOverflowEnd` or `eUpdate` instead.
+- **`Timeline` refresh gate:** track/`eUpdate` handling is deferred until the first ScrollTrigger `onRefresh` has rebuilt bounds (tracks added before `set()` start at `[0, 0]`). If GSAP already advanced scrub progress during that first refresh, Timeline catch-up runs right after `eRefresh` so skipped leave/enter stay consistent on history restore.
 
 ---
 
 ## See also
 
 - [Plugins index](../plugins.md)  
-- [Core — Event](../core.md) · [Recipes](../recipes.md)  
+- [Core — Event](../core.md) · [Recipes](../recipes.md)
