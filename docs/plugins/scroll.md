@@ -1,6 +1,6 @@
 # Scroll
 
-Smooth scrolling via **[Lenis](https://github.com/darkroomengineering/lenis)**, loaded lazily and driven by `Up.Thread` (`autoRaf: false`).
+Smooth scrolling via **[Lenis](https://github.com/darkroomengineering/lenis)**, loaded lazily and advanced each frame by a `Up.Thread` **driver** (`autoRaf: false`, before modifiers).
 
 | | |
 | --- | --- |
@@ -62,17 +62,8 @@ Up.Scroll.workspace(({ Lenis, global }) => {
 
 1. Enable **Scroll** + **Anime** with `ScrollTrigger` in Anime `plugins`.  
 2. In `Anime.sub`, create tweens / `Timeline` as usual.  
-3. After Lenis is up, connect it to ScrollTrigger yourself (Lenis docs, `ScrollTrigger.scrollerProxy`, or `ScrollTrigger.update()` on Lenis `scroll`).
-
-> **Tip:** upwwwards does not wire Lenis and ScrollTrigger together automatically.
-
-```ts
-Up.Scroll.workspace(({ global }) => {
-  global.on('scroll', () => {
-    // e.g. ScrollTrigger.update() when using scrubbed triggers
-  })
-})
-```
+3. Lenis already **`Thread.arm(32)`** on `scroll`, so Anime’s ScrollTrigger modifiers (`update` / refresh on scroll & resize) run in the Thread modifiers phase after the Lenis driver — no manual `ScrollTrigger.update()` listener required for the basic case.  
+4. For a custom scroller element, still set up `ScrollTrigger.scrollerProxy` yourself (Lenis docs).
 
 ---
 
@@ -83,7 +74,7 @@ Up.Scroll.workspace(({ global }) => {
 Optional.
 
 - First **`LIFE`** → plugin calls `workspace` internally so Lenis starts loading (even if you never call `Up.Scroll` yourself).  
-- **`LOAD`** → forever Thread task (flag `32`) drives Lenis each frame (`autoRaf: false`).  
+- **`LOAD`** → Thread **driver** advances Lenis each frame (`autoRaf: false`); Lenis `scroll` arms flag `32` so scroll modifiers (`App.updateScrollVars`, ScrollTrigger, …) run before tasks.  
 - Client-only. Peer required on first real use — [FAQ](../faq.md#missing-peer-gsap--lenis--three).
 
 ---

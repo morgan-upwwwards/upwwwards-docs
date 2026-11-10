@@ -202,32 +202,38 @@ Up.Event.unsub(['click', onClick], document.body)
 | `cw` / `ch` | Client size |
 | `sw` / `sh` | Screen |
 | `lw` / `lh` | “Large” / visual viewport helpers |
+| `y` / `dY` / `downwards` | Scroll position / delta / direction |
 | `AGENT` / `NAVIGATOR` | Coarse UA family |
 
+- Metrics refresh via Thread modifiers on resize (`8`) / scroll (`32`) when those flags are armed (`Thread.sub` / `Thread.arm`). Public helpers: `App.updateScreenVars()` / `App.updateScrollVars()` (prefer the modifier path).  
 - Augment cache types in `customizable/types/config.d.ts` (`AppCache`) — [example](initializers.md#generated-types-augmentations).  
 - Keys starting with `$` are meant for adapter refs (reactive).  
 - On the server, the cache is **request-scoped** (needs [contexts](contexts.md)). Prefer static string keys.
 
 ### `Up.Thread` — when `TICK` is not enough
 
-Most apps should prefer **`Up.Event.sub(['TICK', …])`**. Use Thread directly for budgets, priorities, or spreading work across frames.
+Most apps should prefer **`Up.Event.sub(['TICK', …])`**. Use Thread directly for budgets, priorities, drivers, or spreading work across frames.
 
-Thread runs one-shot (**flow**) and recurring (**forever**) tasks on `rAF`, with soft budgets (`up.thread.flowBudget` / `foreverBudget`, defaults ~8 ms / ~4 ms).
+Each processed frame runs, in order: **drivers** → **modifiers** → **tasks by ascending flag** (for each flag: **forever** then **flow**). Soft budgets (`up.thread.flowBudget` / `foreverBudget`, defaults ~8 ms / ~4 ms) apply separately to forever and flow.
 
 **Default `Thread.sub` is one-shot (flow)** — not a per-frame loop.
 
 | API | Role |
 | --- | --- |
-| `Thread.sub(task, flag?, …args)` | Schedule a task (flow unless marked forever) |
+| `Thread.sub(task, flag?, …args)` | Schedule a task (flow unless marked forever); arms modifiers of `flag` |
 | `Thread.unsub(task)` | Remove it |
 | `Thread.markForever(task)` | Mark **before** `sub` so it runs every frame |
 | `Thread.unmarkForever(task)` | Clear forever mark + unsub |
 | `Thread.wait(task)` | Promise when that task completes (or is unsub’d) |
-| `Thread.addModifier(cb, flag)` | Hook before tasks of a flag, once per frame |
+| `Thread.addModifier(cb, flag)` | Hook before tasks of a flag, once per frame when armed |
+| `Thread.arm(flag)` | Arm modifiers of `flag` for the next modifiers phase (no task) |
+| `Thread.addDriver(cb)` | Hook at the **start** of every frame (before modifiers) |
+| `Thread.removeDriver(cb)` | Remove a driver |
 | `Thread.timestamp` / `delta` | Current frame time / delta |
-| `Thread.MAX_FLAG` | `4096` — **default flag** of `Thread.sub` |
+| `Thread.DEFAULT_FLAG` | `8192` — **default flag** of `Thread.sub` |
+| `Thread.MAX_FLAG` | `32768` — highest flag (end-of-frame forever work, e.g. Anime) |
 
-Priority **flags** are powers of 2 from `1` to `4096` (lower runs first). Built-ins include `EARTHQUAKE` `2`, `resize` `8`, `scroll` `32`, Event default `128`, Observer `512`, Synthra `2048`. Omitting `flag` uses **`MAX_FLAG` (`4096`)**, not `128`.
+Priority **flags** are powers of 2 from `1` to `32768` (lower runs first). Built-ins include `EARTHQUAKE` `2`, `resize` `8`, `scroll` `32`, Event default `128`, Observer `512`, Synthra `2048`, **default `8192`**, spare `16384`, **max `32768`**. Omitting `flag` uses **`DEFAULT_FLAG` (`8192`)**, not Event’s `128` and not `MAX_FLAG`.
 
 ```ts
 const spin = () => { /* … */ }

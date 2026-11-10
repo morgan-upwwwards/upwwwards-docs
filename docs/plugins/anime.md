@@ -206,6 +206,8 @@ With Lenis: [Scroll — Going further](scroll.md#with-anime--scrolltrigger).
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
 - The Vite plugin rewrites Anime `plugins` into dynamic `import('gsap/<Name>')` loaders and augments bucket types.  
+- Clock: GSAP’s ticker drives `Up.Thread`, or — if Thread already has an external ticker — GSAP sleeps and `gsap.updateRoot` runs as a forever Thread task on **`MAX_FLAG` (`32768`)** (after drivers, modifiers, and lower-flag tasks).  
+- With **Scroll** enabled, Lenis arms flag `32` so ScrollTrigger modifiers stay in sync without a manual Lenis `scroll` listener.  
 - `unsub` runs `cleaningStack` in reverse, then `ctx.revert()`.  
 - Helpers created inside `sub` push destroyers onto `workspace.cleaningStack`.  
 - **Known limitation:** `Timeline` accepts `eRefresh`, but it is stored and **not called yet**. Use `getOverflowStart` / `getOverflowEnd` or `eUpdate` instead.
