@@ -116,13 +116,32 @@ Up.Anime.sub(KEY, ({ Tweens }) => {
 
 ### Helper: `Split`
 
-Requires `'SplitText'` in Anime `plugins`. Collection of `SplitText` instances; `destroy` restores markup. Auto-cleaned inside `sub`.
+Requires `'SplitText'` in Anime `plugins`. Owns **one** `SplitText` per target in a private GSAP context; `destroy` restores markup. Auto-cleaned inside `sub`.
+
+`add(target, vars)` always returns a **`Split.SPLIT`** (`types`, `mask`, `chars` / `lines` / `words` / `masks`, `splitText`) — not a raw `SplitText`. On the **same target**, it is the **same object**: element arrays keep their references and are refreshed in place after a re-split.
+
+| Call | Behavior |
+| --- | --- |
+| Subset of cached types (+ compatible `mask`) | Return cache, no re-split |
+| New types and/or new `mask` | **Merge** types, `splitText.split(…)`, refresh arrays |
+| `reconstruct: true` | **Replace** cached types / mask, re-split, refresh arrays |
+
+`reconstruct` is upwwwards-only (not forwarded to GSAP). Tweens already targeting old DOM nodes stay stale after an expand / reconstruct — re-read `text.lines` / `text.words` (or rebuild tweens) if needed.
 
 ```ts
 Up.Anime.sub(KEY, ({ gsap, Split }) => {
   const split = new Split()
   const text = split.add('.hero__title', { type: 'lines,words' })
   gsap.from(text.words, { yPercent: 100, stagger: 0.05 })
+
+  // same object: union types + re-split in place
+  split.add('.hero__title', { type: 'lines,words,chars' })
+
+  // same object: subset → reuse, no re-split
+  split.add('.hero__title', { type: 'words' })
+
+  // same object: replace definition + re-split
+  split.add('.hero__title', { type: 'words', reconstruct: true })
 })
 ```
 
@@ -145,7 +164,7 @@ The trigger should be **taller than the viewport** (`100lvh`); otherwise the ran
 | `getOverflowStart` / `getOverflowEnd` | `() => number` px; re-read on refresh |
 | `eEnter` / `eEnterBack` / `eLeave` / `eLeaveBack` | Replaces forbidden native `onEnter` / … |
 | `eUpdate(progress)` | Progress `0`–`1` after track callbacks |
-| `eRefresh` | Reserved — see [Under the hood](#under-the-hood) |
+| `eRefresh` | After each ScrollTrigger refresh, once overflows / animations / tracks are recomputed |
 | `name` | Debug label |
 
 Native `onEnter` / `onUpdate` / `onRefresh` / … are **typed as `never`** — use the `e*` hooks.
@@ -166,6 +185,8 @@ Four mutually exclusive forms (fractions `0`–`1`):
 **`addAnimation`:** types `'F'` / `'T'` / `'F/T'`. Do **not** set `duration` — derived from placement. Chainable.
 
 **`addTrack`:** logical segment without a tween (`eEnter` / `eLeave` / `eUpdate` / `eDestroy`). Higher `priority` wins when several tracks update one object; `skipped: true` means the track was jumped — apply final state without animating.
+
+**`update()`:** waits for pending fragment updates and the first ScrollTrigger refresh, then forces a track re-evaluation from the **last notified** progress to the live scrub progress (e.g. after adding tracks). Mid-scroll restore catch-up from `0` is done on that first refresh, not by `update()` itself. Does nothing if `Up.App.y` is still before the timeline start. Warns and returns if the timeline is not configured.
 
 ```ts
 Up.Anime.sub(KEY, ({ Timeline }) => {
@@ -206,13 +227,15 @@ With Lenis: [Scroll — Going further](scroll.md#with-anime--scrolltrigger).
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
 - The Vite plugin rewrites Anime `plugins` into dynamic `import('gsap/<Name>')` loaders and augments bucket types.  
+- Clock: GSAP’s ticker drives `Up.Thread`, or — if Thread already has an external ticker — GSAP sleeps and `gsap.updateRoot` runs as a forever Thread task on **`MAX_FLAG` (`32768`)** (after drivers, modifiers, and lower-flag tasks).  
+- With **Scroll** enabled, Lenis arms flag `32` so ScrollTrigger modifiers stay in sync without a manual Lenis `scroll` listener.  
 - `unsub` runs `cleaningStack` in reverse, then `ctx.revert()`.  
 - Helpers created inside `sub` push destroyers onto `workspace.cleaningStack`.  
-- **Known limitation:** `Timeline` accepts `eRefresh`, but it is stored and **not called yet**. Use `getOverflowStart` / `getOverflowEnd` or `eUpdate` instead.
+- **`Timeline` refresh gate:** track/`eUpdate` handling is deferred until the first ScrollTrigger `onRefresh` has rebuilt bounds (tracks added before `set()` start at `[0, 0]`). If GSAP already advanced scrub progress during that first refresh, Timeline catch-up runs right after `eRefresh` so skipped leave/enter stay consistent on history restore.
 
 ---
 
 ## See also
 
 - [Plugins index](../plugins.md)  
-- [Core — Event](../core.md) · [Recipes](../recipes.md)  
+- [Core — Event](../core.md) · [Recipes](../recipes.md)
