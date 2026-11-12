@@ -82,7 +82,7 @@ Register promises with `Up.App.addWait(…)` (e.g. during `LIFE`, before subscri
 
 ### My `Thread.sub(frame)` only ran once
 
-Expected: default tasks are **flow** (one-shot). For every frame, `Up.Thread.markForever(frame)` **before** `sub`, or use `Up.Event.sub(['TICK', frame])`. Default flag is `4096` (`MAX_FLAG`), not Event’s `128`. — [core — Thread](core.md#upthread--when-tick-is-not-enough).
+Expected: default tasks are **flow** (one-shot). For every frame, `Up.Thread.markForever(frame)` **before** `sub`, or use `Up.Event.sub(['TICK', frame])`. Default flag is `8192` (`DEFAULT_FLAG`), not Event’s `128` and not `MAX_FLAG` (`32768`). — [core — Thread](core.md#upthread--when-tick-is-not-enough).
 
 ### `Up.destroy()` broke the app / HMR
 

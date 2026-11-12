@@ -37,6 +37,8 @@ Optional.
 | --- | --- |
 | `new CallStack(...callbacks)` | Optional initial callbacks |
 | `add(cb)` / `remove(cb)` | Register / unregister (duplicates allowed on add) |
+| `clear()` | Remove every callback (safe during `loop` / `gen`) |
+| `has(cb)` | Whether `cb` is registered |
 | `loop(...args)` | Call every callback with the args |
 | `gen(...args)` | Generator that yields after each callback (used by Thread) |
 | `length` | Callback count |
@@ -51,7 +53,7 @@ Errors in `loop` / `gen` are logged with [`Logs.error`](logs.md) and stop the re
 
 Optional.
 
-- Safe to add/remove during iteration: removals apply immediately without skipping the next callback; additions run from the next iteration.  
+- Safe to add/remove/`clear` during iteration: removals apply immediately without skipping the next callback; additions run from the next iteration; `clear` skips remaining callbacks.  
 - Deep tuple helpers live on the `Arrays` namespace in source (`Join`, `Pad`, `Includes`, …).
 
 ---

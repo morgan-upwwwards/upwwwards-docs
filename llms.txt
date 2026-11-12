@@ -70,7 +70,9 @@ API docs (core, adapters, initializers, contexts, plugins, scripts, classter, sy
 
 ## Thread / Event pitfalls
 
-- `Up.Thread.sub(task)` is one-shot (flow) by default; flag default is `4096` (`MAX_FLAG`)
+- Frame order: drivers → modifiers → tasks by flag (forever then flow); budgets are separate for forever / flow
+- `Up.Thread.sub(task)` is one-shot (flow) by default; flag default is `8192` (`DEFAULT_FLAG`); `MAX_FLAG` is `32768` (end-of-frame)
+- `Thread.addDriver` / `removeDriver` — early frame hooks (e.g. Lenis `raf`); `Thread.arm(flag)` — run modifiers without a task
 - Forever: `markForever(task)` then `sub`, or prefer `Up.Event.sub(['TICK', …])`
 - Event ticket `{ once: true }` (third field, Event manager only): run once per key then auto-unsub; unsub still uses the same function ref
 - DOM `Event.sub(..., element)` third field is `AddEventListenerOptions`, not Event `{ once: true }`
