@@ -45,7 +45,7 @@ alias:[value]
 
 Sample aliases: `di` display · `pa` / `ma` padding / margin · `wi` / `he` width / height · `co` / `ba-co` color / background-color.
 
-Full table: [classter-aliases.md](classter-aliases.md).
+Full default alias catalog (every entry from `props.ts`): **[classter-aliases.md](classter-aliases.md)**.
 
 ---
 
@@ -82,7 +82,7 @@ By default Classter reads `class="…"`. Extend via `classter.identifiers` (also
 | Key | Role |
 | --- | --- |
 | `identifiers.class` | Extra prop / attribute names that hold class tokens |
-| `identifiers.attributes` | Prop names whose **object** values are walked for nested class keys |
+| `identifiers.attributes` | Prop names whose **object** values are walked for nested `class` keys (and nested attribute bags) |
 
 ```ts
 initializer({
@@ -97,7 +97,35 @@ initializer({
 })
 ```
 
+Examples with `attributes: ['attrs']` (or `propAttrs`, …):
+
+```html
+<!-- Vue -->
+<div v-bind="{ class: 'pa:1rem' }" />
+<Comp :attrs="{ class: 'pa:1rem' }" />
+<div v-bind="{ attrs: { class: 'pa:1rem' } }" />
+
+<!-- Svelte -->
+<div {...{ class: 'pa:1rem' }}></div>
+<Comp propAttrs={{ class: 'pa:1rem' }}></Comp>
+```
+
 Plain HTML scan only reads double-quoted `class="…"` (custom class identifiers are ignored there).
+
+### Binding forms (static analysis)
+
+Classter only keeps tokens it can resolve **statically**. Identifiers and member access (`foo`, `obj.x`) are skipped.
+
+| Host | Supported shapes (examples) |
+| --- | --- |
+| **Vue** | `class="…"`, `:class="'…'"`, `` :class="`…${…}`" `` (nested templates OK), arrays, `{ 'pa:1rem': cond }`, ternaries / logical `and`/`or`, `'a' + 'b'`, `v-bind="{ class: … }"` |
+| **Svelte** | `class="…"`, `class={…}` (same expression shapes via the Svelte AST), `class="text {expr}"`, spreads `{...{ class: … }}`, attribute bags; `class:name={…}` pushes `name` only if it is already a Classter token |
+
+**Quotes in Vue templates:** keep the attribute in double quotes and use single quotes inside objects, e.g. `:class="[{ 'pa:1rem': true }]"`. Nested double quotes break the HTML attribute.
+
+**Svelte nuance:** in `class="x {y}"`, `{y}` is string-like — object **keys** inside that mustache are ignored. Use `class={{ 'pa:1rem': true }}` (or an array) when the object itself is the class value.
+
+Sample aliases: use `di` for `display` (not `d`), `pa` / `ma`, `wi` / `he`, `co` / `ba-co`.
 
 ---
 
@@ -105,20 +133,23 @@ Plain HTML scan only reads double-quoted `class="…"` (custom class identifiers
 
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
-Optional.
-
 | Option | Role |
 | --- | --- |
 | `off` | Disable Classter — do **not** import `classter.css` |
 | `silent` | Quiets some unknown-alias / non-static warnings |
 
 - Live `classter.css` + HMR when templates change.  
+- **Vue:** directive expressions go through Meriyah (as `(expr)` so `{ class: … }` is an object, not a block), then the shared ESTree walker.  
+- **Svelte:** walks the compiler AST directly (no string re-parse for `class={…}`).  
+- **`runProperties`:** `checkKey` true → keys are class tokens (Identifier + string Literal); `checkKey` false → follow `CLASS_IDENTIFIERS` values and recurse into `ATTRIBUTES_IDENTIFIERS` object bags.  
 - At-rule aliases (`@me` → `@media`, …) exist in the shared table but are not typical `class` tokens — see [classter-aliases](classter-aliases.md).
+
+Regression harnesses (dev): `upwwwards/scripts/classter-vue-cases.mjs` and `classter-svelte-cases.mjs`.
 
 ---
 
 ## See also
 
-- [Classter aliases](classter-aliases.md)  
+- [Classter aliases](classter-aliases.md) — complete default alias table  
 - [Initializers](initializers.md)  
-- [Getting started](getting-started.md)  
+- [Getting started](getting-started.md)

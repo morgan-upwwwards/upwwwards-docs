@@ -264,7 +264,19 @@ Up.Event.sub([
 <div class="di:flex ju-co:center pa:1rem ba-co:[#111] co:[#fff]" />
 ```
 
-[classter](classter.md) · [aliases](classter-aliases.md).
+```html
+<!-- Vue: nested template / object map -->
+<div :class="[`pa:1rem ${cond ? 'di:block' : 'di:none'}`]" />
+<div :class="{ 'pa:1rem': cond }" />
+```
+
+```svelte
+<!-- Svelte -->
+<div class={['pa:1rem', cond && 'di:flex']}></div>
+<div {...{ class: 'ma:1rem' }}></div>
+```
+
+Import `classter.css` once. [classter](classter.md) · [aliases](classter-aliases.md).
 
 ### `TICK` vs Thread forever
 
@@ -283,4 +295,4 @@ Do **not** use bare `Up.Thread.sub(frame)` expecting a loop — [core — Thread
 ## See also
 
 - [Getting started](getting-started.md) · [Concepts](concepts.md) · [FAQ](faq.md)  
-- [Core](core.md) · [Plugins](plugins.md) · [Documentation index](index.md)  
+- [Core](core.md) · [Plugins](plugins.md) · [Documentation index](index.md)
