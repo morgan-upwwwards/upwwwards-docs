@@ -125,7 +125,7 @@ Classter only keeps tokens it can resolve **statically**. Identifiers and member
 
 | Host | Supported shapes (examples) |
 | --- | --- |
-| **Vue** | `class="…"`, `:class="'…'"`, `` :class="`…${…}`" `` (nested templates OK), arrays, `{ 'pa:1rem': cond }`, ternaries / logical `and`/`or`, `'a' + 'b'`, `v-bind="{ class: … }"` |
+| **Vue** | `class="…"`, `:class="'…'"`, `` :class="`…${…}`" `` (nested templates OK), arrays, `{ 'pa:1rem': cond }`, ternaries / logical `and`/`or`, string `+` (literals / templates / chains), `v-bind="{ class: … }"` |
 | **Svelte** | `class="…"`, `class={…}` (same expression shapes via the Svelte AST), `class="text {expr}"`, spreads `{...{ class: … }}`, attribute bags; `class:name={…}` pushes `name` only if it is already a Classter token |
 
 **Quotes in Vue templates:** keep the attribute in double quotes and use single quotes inside objects, e.g. `:class="[{ 'pa:1rem': true }]"`. Nested double quotes break the HTML attribute.
