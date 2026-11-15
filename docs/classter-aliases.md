@@ -6,7 +6,7 @@ Token syntax and setup: [classter.md](classter.md).
 
 **How to use this page**
 
-- Day-to-day class tokens use the **Properties** and **Pseudo-elements** sections (`pa:1rem`, `co:[#fff]:before`).
+- Day-to-day class tokens use the **Properties**, **Pseudo-elements**, and **Pseudo-classes** sections (`pa:1rem`, `co:[#fff]:before`, `pa:1rem:hover`).
 - **At-rules** (`@me` → `@media`, …) are part of the shared alias table for completeness; they are not typical `class="…"` tokens. Prefer property aliases in templates.
 - Properties are grouped by the first letter of the alias. Use editor search for a CSS property name (e.g. `justify-content`).
 
@@ -36,7 +36,107 @@ Token syntax and setup: [classter.md](classter.md).
 | --- | --- |
 | `:before` | `::before` |
 | `:after` | `::after` |
+| `:first-letter` | `::first-letter` |
+| `:first-line` | `::first-line` |
+| `:placeholder` | `::placeholder` |
+| `:selection` | `::selection` |
+| `:target-text` | `::target-text` |
+| `:spelling-error` | `::spelling-error` |
+| `:grammar-error` | `::grammar-error` |
+| `:marker` | `::marker` |
+| `:file-selector-button` | `::file-selector-button` |
+| `:checkmark` | `::checkmark` |
+| `:picker-icon` | `::picker-icon` |
+| `:picker` | `::picker` |
+| `:backdrop` | `::backdrop` |
+| `:details-content` | `::details-content` |
+| `:column` | `::column` |
+| `:scroll-button` | `::scroll-button` |
+| `:scroll-marker` | `::scroll-marker` |
+| `:scroll-marker-group` | `::scroll-marker-group` |
+| `:part` | `::part` |
+| `:slotted` | `::slotted` |
+| `:cue` | `::cue` |
+| `:highlight` | `::highlight` |
+| `:view-transition` | `::view-transition` |
+| `:view-transition-group` | `::view-transition-group` |
+| `:view-transition-image-pair` | `::view-transition-image-pair` |
+| `:view-transition-old` | `::view-transition-old` |
+| `:view-transition-new` | `::view-transition-new` |
 
+## Pseudo-classes
+
+| Alias | CSS |
+| --- | --- |
+| `:hover` | `:hover` |
+| `:active` | `:active` |
+| `:focus` | `:focus` |
+| `:focus-visible` | `:focus-visible` |
+| `:focus-within` | `:focus-within` |
+| `:visited` | `:visited` |
+| `:link` | `:link` |
+| `:any-link` | `:any-link` |
+| `:target` | `:target` |
+| `:target-within` | `:target-within` |
+| `:enabled` | `:enabled` |
+| `:disabled` | `:disabled` |
+| `:checked` | `:checked` |
+| `:indeterminate` | `:indeterminate` |
+| `:required` | `:required` |
+| `:optional` | `:optional` |
+| `:valid` | `:valid` |
+| `:invalid` | `:invalid` |
+| `:in-range` | `:in-range` |
+| `:out-of-range` | `:out-of-range` |
+| `:read-only` | `:read-only` |
+| `:read-write` | `:read-write` |
+| `:placeholder-shown` | `:placeholder-shown` |
+| `:default` | `:default` |
+| `:autofill` | `:autofill` |
+| `:user-valid` | `:user-valid` |
+| `:user-invalid` | `:user-invalid` |
+| `:blank` | `:blank` |
+| `:root` | `:root` |
+| `:empty` | `:empty` |
+| `:first-child` | `:first-child` |
+| `:last-child` | `:last-child` |
+| `:only-child` | `:only-child` |
+| `:first-of-type` | `:first-of-type` |
+| `:last-of-type` | `:last-of-type` |
+| `:only-of-type` | `:only-of-type` |
+| `:nth-child` | `:nth-child` |
+| `:nth-last-child` | `:nth-last-child` |
+| `:nth-of-type` | `:nth-of-type` |
+| `:nth-last-of-type` | `:nth-last-of-type` |
+| `:not` | `:not` |
+| `:is` | `:is` |
+| `:where` | `:where` |
+| `:has` | `:has` |
+| `:scope` | `:scope` |
+| `:lang` | `:lang` |
+| `:dir` | `:dir` |
+| `:defined` | `:defined` |
+| `:fullscreen` | `:fullscreen` |
+| `:modal` | `:modal` |
+| `:popover-open` | `:popover-open` |
+| `:open` | `:open` |
+| `:closed` | `:closed` |
+| `:playing` | `:playing` |
+| `:paused` | `:paused` |
+| `:picture-in-picture` | `:picture-in-picture` |
+| `:seeking` | `:seeking` |
+| `:buffering` | `:buffering` |
+| `:stalled` | `:stalled` |
+| `:muted` | `:muted` |
+| `:volume-locked` | `:volume-locked` |
+| `:host` | `:host` |
+| `:host-context` | `:host-context` |
+| `:state` | `:state` |
+| `:nth-col` | `:nth-col` |
+| `:nth-last-col` | `:nth-last-col` |
+| `:current` | `:current` |
+| `:past` | `:past` |
+| `:future` | `:future` |
 ## Properties
 
 ### A

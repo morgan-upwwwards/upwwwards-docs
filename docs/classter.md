@@ -61,7 +61,7 @@ Optional.
 alias:value:pseudo
 ```
 
-**`:before` or `:after` only** (`co:[#fff]:before` → `::before`). Other pseudo-classes (`:hover`, `:focus`, …) are **not** supported as the third segment.
+Any pseudo-class / pseudo-element listed in [classter-aliases](classter-aliases.md) (`co:[#fff]:before` → `::before`, `pa:1rem:hover` → `:hover`, `pa:1rem:nth-child(2n)` → `:nth-child(2n)`). Functional ones take `(…)`; use `_` for spaces inside, same as bracketed values (`pa:1rem:nth-child(2n_+_1)` → `:nth-child(2n + 1)`, `pa:1rem:not(.foo_.bar)` → `:not(.foo .bar)`).
 
 ### Alias shortcut rule
 
@@ -139,7 +139,7 @@ Sample aliases: use `di` for `display` (not `d`), `pa` / `ma`, `wi` / `he`, `co`
 | `silent` | Quiets some unknown-alias / non-static warnings |
 
 - Live `classter.css` + HMR when templates change.  
-- **Vue:** directive expressions go through Meriyah (as `(expr)` so `{ class: … }` is an object, not a block), then the shared ESTree walker.  
+- **Vue:** directive expressions go through Meriyah (as `(expr)` so `{ class: … }` is an object, not a block), then the shared ESTree walker. Type assertions (`as any`, …) are stripped first; parse failures warn and skip instead of breaking the Vite transform. Call / member expressions are ignored (runtime).  
 - **Svelte:** walks the compiler AST directly (no string re-parse for `class={…}`).  
 - **`runProperties`:** `checkKey` true → keys are class tokens (Identifier + string Literal); `checkKey` false → follow `CLASS_IDENTIFIERS` values and recurse into `ATTRIBUTES_IDENTIFIERS` object bags.  
 - At-rule aliases (`@me` → `@media`, …) exist in the shared table but are not typical `class` tokens — see [classter-aliases](classter-aliases.md).
