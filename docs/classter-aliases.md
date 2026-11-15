@@ -2,11 +2,13 @@
 
 Full default alias table shipped with Classter. Shortcut rule: first two letters of each hyphen-separated word (`ba-co` → `background-color`); collisions keep the last word in full (`bo-collapse`, `translate`, …).
 
-Token syntax and setup: [classter.md](classter.md).
+Token syntax, underscores (`_` / `__`), selectors, and setup: [classter.md](classter.md).
 
 **How to use this page**
 
-- Day-to-day class tokens use the **Properties**, **Pseudo-elements**, and **Pseudo-classes** sections (`pa:1rem`, `co:[#fff]:before`, `pa:1rem:hover`).
+- Day-to-day class tokens use the **Properties**, **Pseudo-elements**, and **Pseudo-classes** sections (`pa:1rem`, `co:[#fff]:before`, `pa:1rem:hover`, `pa:1rem>ul:is(.my__class)`).
+- In the token, write one leading colon (`:before`, `:nth-child(…)`); this table is the emitted CSS (`::before`, `:nth-child`, …).
+- Combinators / `[selector]` + `:pseudo` — see [classter.md — Selector + pseudo](classter.md#selector--pseudo-segments). Inside `(…)` args, `_` → space and `__` → `_`.
 - **At-rules** (`@me` → `@media`, …) are part of the shared alias table for completeness; they are not typical `class="…"` tokens. Prefer property aliases in templates.
 - Properties are grouped by the first letter of the alias. Use editor search for a CSS property name (e.g. `justify-content`).
 

@@ -63,7 +63,7 @@ API docs (core, adapters, initializers, contexts, plugins, scripts, classter, sy
 - docs/contexts.md — SSR cookies
 - docs/plugins.md + docs/plugins/*.md
 - docs/scripts.md + docs/scripts/*.md (maths, strings, parser, wait, cookies, trees, colors, is, arrays, logs)
-- docs/classter.md + docs/classter-aliases.md
+- docs/classter.md + docs/classter-aliases.md — tokens `alias:value`, optional `>…`/`[selector]`, optional `:pseudo`; in `[…]` and pseudo `(…)`: `_`→space, `__`→`_`
 - docs/advanced/symbols.md
 - docs/advanced/license.md
 - README.md — human overview + quick start + optional showcase (recipes are the task cookbook)

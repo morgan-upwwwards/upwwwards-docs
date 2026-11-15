@@ -261,22 +261,25 @@ Up.Event.sub([
 ### Classter token in a template
 
 ```html
-<div class="di:flex ju-co:center pa:1rem ba-co:[#111] co:[#fff]" />
+<div class="di:flex ju-co:center pa:1rem ba-co:[#111] co:[#fff] ma:[0_auto]" />
 ```
 
 ```html
-<!-- Vue: nested template / object map -->
+<!-- Vue: nested template / object map / concat -->
 <div :class="[`pa:1rem ${cond ? 'di:block' : 'di:none'}`]" />
 <div :class="{ 'pa:1rem': cond }" />
+<div :class="`${cssModule} ` + 'pa:1rem:hover ma:[0_auto]'" />
+<div class="pa:1rem>ul+.item:is(.my__class) co:[#fff]:before" />
 ```
 
 ```svelte
 <!-- Svelte -->
 <div class={['pa:1rem', cond && 'di:flex']}></div>
 <div {...{ class: 'ma:1rem' }}></div>
+<div class="pa:1rem[>li_.my__class]:hover"></div>
 ```
 
-Import `classter.css` once. [classter](classter.md) · [aliases](classter-aliases.md).
+Underscores in `[…]` / pseudo `(…)`: `_` → space, `__` → `_`. Import `classter.css` once. [classter](classter.md) · [aliases](classter-aliases.md).
 
 ### `TICK` vs Thread forever
 
