@@ -42,6 +42,7 @@ alias:[value]
 
 - **alias** — shortcut for a CSS property (`pa` → `padding`, `ba-co` → `background-color`).  
 - **value** — plain token, or `[…]` where `_` means space (`ma:[0_auto]` → `margin: 0 auto`).  
+- **selector** *(optional)* — `_` / `>` / `+` / `~`, or `[…]`, appended after the class (`pa:1rem_[li]`, `ma:[5rem_8rem][>ul+.x>]:is(strong,mark)`).
 
 Sample aliases: `di` display · `pa` / `ma` padding / margin · `wi` / `he` width / height · `co` / `ba-co` color / background-color.
 
@@ -55,13 +56,19 @@ Full default alias catalog (every entry from `props.ts`): **[classter-aliases.md
 
 Optional.
 
-### Pseudo segment
+### Selector + pseudo segments
 
 ```
+alias:value
 alias:value:pseudo
+alias:value[selector]:pseudo
+alias:value>:pseudo
 ```
 
-Any pseudo-class / pseudo-element listed in [classter-aliases](classter-aliases.md) (`co:[#fff]:before` → `::before`, `pa:1rem:hover` → `:hover`, `pa:1rem:nth-child(2n)` → `:nth-child(2n)`). Functional ones take `(…)`; use `_` for spaces inside, same as bracketed values (`pa:1rem:nth-child(2n_+_1)` → `:nth-child(2n + 1)`, `pa:1rem:not(.foo_.bar)` → `:not(.foo .bar)`).
+Optional **selector**: a single combinator `_` (descendant space), `>`, `+`, `~`, or a `[…]` fragment ( `_` → space inside). Then optional **pseudo** from [classter-aliases](classter-aliases.md) (`co:[#fff]:before` → `::before`, `pa:1rem:hover` → `:hover`). Functional args use `_` for spaces (`pa:1rem:nth-child(2n_+_1)` → `:nth-child(2n + 1)`).
+
+Example: `ma:[5rem_8rem][>ul+.class>]:is(strong,mark:not(.red))` →  
+`.ma\:\[5rem_8rem\]\[\>ul\+\.class\>\]\:is\(strong\,mark\:not\(\.red\)\)>ul+.class>:is(strong,mark:not(.red)){margin:5rem 8rem}`.
 
 ### Alias shortcut rule
 
