@@ -10,6 +10,8 @@ Tracks the active **layout format** as reactive adapter refs: crushed `C`, mobil
 
 **Levels:** 🟢 [Essentials](#essentials) (start here) · 🟡 [Going further](#going-further) (optional) · ⬛ [Under the hood](#under-the-hood) (optional)
 
+> **Warning — hydration mismatches.** SSR seeds the store from a cookie or `defaultFormat`. The client may then run `matchMedia` before hydration finishes and flip refs, which Vue / Svelte report as a mismatch. See [Hydration mismatches](#hydration-mismatches).
+
 ---
 
 ## Essentials
@@ -88,6 +90,7 @@ plugins: [
     name: 'Screen',
     config: {
       defaultFormat: 'D',
+      firstUpdateDelayed: true, // optional — see Hydration mismatches
       dimensions: {
         crushedHeight: 435, // default
         mobileWidth: 768,
@@ -98,11 +101,39 @@ plugins: [
 ]
 ```
 
-`defaultFormat` is used on a first visit (no cookie) and during SSR when nothing else is known — pick a sensible value for your audience.
+| Option | Default | Role |
+| --- | --- | --- |
+| `defaultFormat` | `'D'` | First visit / invalid cookie / no media match; also the SSR seed when nothing else is known |
+| `firstUpdateDelayed` | `false` | Defer the first `matchMedia` sync until `LIFE` (see below) |
+| `dimensions.*` | `435` / `768` / `1440` | Breakpoints in CSS px (`mobileWidth` must be ≤ `tabletWidth`) |
+
+`defaultFormat` should match the layout most of your audience sees on first paint.
 
 ### CSS variables and SCSS
 
-CSS variables on `:root`: `--up-screen-crushed-height`, `--up-screen-mobile-width`, `--up-screen-tablet-width`. The Vite plugin can also emit a `_screen.scss` partial from the same breakpoints.
+CSS variables on `:root`: `--upwwwards-screen-crushed-height`, `--upwwwards-screen-mobile-width`, `--upwwwards-screen-tablet-width`. The Vite plugin can also emit a `_screen.scss` partial from the same breakpoints.
+
+### Hydration mismatches
+
+The server never knows the real viewport. It seeds Screen from:
+
+1. Cookie `upwwwards.plugins.screen.format` (last client format), or  
+2. `defaultFormat` when the cookie is missing or invalid.
+
+By default (`firstUpdateDelayed: false`), `Up.set` immediately syncs with `matchMedia`. If that format differs from the SSR seed **before** hydration completes, branching on `Up.Screen.get(…)` (`v-if` / `{#if}`) can throw a hydration mismatch.
+
+**How to reduce or avoid it**
+
+| Approach | Effect |
+| --- | --- |
+| Sensible `defaultFormat` | Fewer first-visit surprises when there is no cookie yet |
+| Returning visitors + cookie | SSR usually already matches the last known format |
+| `firstUpdateDelayed: true` | Keeps cookie / `defaultFormat` through hydration; first `matchMedia` (+ resize modifier) runs on the first `LIFE` (skipped if `LIFE` already started, e.g. late re-`set`) |
+| Soft first paint | Prefer CSS that tolerates a short wrong format over hard `v-if` / `{#if}` swaps on critical chrome |
+
+Trade-off with `firstUpdateDelayed: true`: a possible **flash** between SSR paint and `LIFE` if the real viewport ≠ seed. Prefer that over a mismatch when format-driven markup is critical.
+
+Wire the [SSR context](../contexts.md) so the server can read the cookie and keep a request-scoped store.
 
 ---
 
@@ -114,13 +145,14 @@ CSS variables on `:root`: `--up-screen-crushed-height`, `--up-screen-mobile-widt
 
 | Detail | Value |
 | --- | --- |
-| Cookie name | `up::plugins::screen::format` |
+| Cookie name | `upwwwards.plugins.screen.format` |
 | Lifetime | ~1 year (updated when the client format changes) |
 | First visit / invalid cookie | Uses `defaultFormat` (config; default `'D'`) |
+| Secure flag | `true` on HTTPS (and on the server); `false` on plain HTTP so local HTTP still stores the cookie |
 
-**SSR:** the store is seeded from that cookie (or `defaultFormat`) so markup can match the last known client format. Wire the [SSR context](../contexts.md) so request-scoped Screen state is safe on the server. Without a context, server cookie / store access is a no-op or unsafe.
+**SSR:** the store is seeded from that cookie (or `defaultFormat`). Without a [context](../contexts.md), server cookie / store access is a no-op or unsafe.
 
-**Hydration:** after `Up.set`, the client re-syncs with `matchMedia` and Thread resize frames. A first visit (no cookie) or a changed viewport can briefly disagree with SSR until that sync — prefer a sensible `defaultFormat` and avoid layout that hard-depends on the wrong breakpoint for the first paint.
+**Client sync:** default path updates in `Up.set`. With `firstUpdateDelayed: true` and before `Up.Event.PRE_LIFE`, Screen subscribes once to `LIFE`, then registers the Thread resize modifier and runs `matchMedia`. Later viewport changes stay on that resize modifier.
 
 This is **layout-format** persistence, not the unused `hydrate` symbol in [symbols](../advanced/symbols.md).
 
@@ -131,3 +163,4 @@ This is **layout-format** persistence, not the unused `hydrate` symbol in [symbo
 - [Plugins index](../plugins.md)  
 - [Adapters](../adapters.md) — `AdapterRef`  
 - [Contexts](../contexts.md) — SSR store  
+- [FAQ — Screen hydration mismatch](../faq.md#screen-hydration-mismatch--format-wrong-on-first-paint)  

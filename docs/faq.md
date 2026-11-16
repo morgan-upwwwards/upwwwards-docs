@@ -104,9 +104,9 @@ Yes — `import { Colors, Wait } from 'upwwwards/scripts'`. You do **not** get `
 
 Expected (`document` missing). Use `Up.Adapter.setCookie` / `getCookie` / `destroyCookie` with a [context](contexts.md).
 
-### Screen format wrong on first SSR paint
+### Screen hydration mismatch / format wrong on first paint
 
-Cookie `up::plugins::screen::format` may be missing on first visit → `defaultFormat`. Wire SSR context; expect a possible client sync after `Up.set`. — [Screen](plugins/screen.md#cookie--ssr).
+SSR seeds from cookie `upwwwards.plugins.screen.format` or `defaultFormat`. A default client `matchMedia` sync in `Up.set` can disagree before hydration and trip Vue / Svelte mismatches when you branch on `Up.Screen.get`. Mitigations: sensible `defaultFormat`, SSR [context](contexts.md), and `firstUpdateDelayed: true` to wait for `LIFE` (possible short flash). — [Screen — Hydration mismatches](plugins/screen.md#hydration-mismatches).
 
 ---
 

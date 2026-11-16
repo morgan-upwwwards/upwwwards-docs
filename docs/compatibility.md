@@ -60,7 +60,7 @@ A hosted docs site is planned.
 
 - **Tests:** prefer e2e against a real Nuxt/SvelteKit app. Avoid calling `Up.destroy()` in HMR unless you accept an irreversible shutdown — [core — Under the hood](core.md#runtime-boot).  
 - **Performance:** tune `up.thread.flowBudget` / `foreverBudget`; prefer `TICK` / Event over ad-hoc forever tasks; use Thread generators to spread heavy work — [core — Thread](core.md#upthread--when-tick-is-not-enough).  
-- **Cookies:** Adapter / `Cookies` defaults favor `Secure`, `SameSite=Strict`, `path=/`. Screen persists format in `up::plugins::screen::format` (~1 year). Use SSR [contexts](contexts.md) for server cookies; `httpOnly` is server-only on Adapter.
+- **Cookies:** Adapter / `Cookies` defaults favor `Secure`, `SameSite=Strict`, `path=/`. Screen persists format in `upwwwards.plugins.screen.format` (~1 year). Use SSR [contexts](contexts.md) for server cookies; `httpOnly` is server-only on Adapter.
 
 ## See also
 

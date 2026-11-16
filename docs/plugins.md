@@ -52,7 +52,7 @@ Up.Screen.get('M')
 | Plugin | Access | Peer | Lazy? | What it does |
 | --- | --- | --- | --- | --- |
 | [Observer](plugins/observer.md) | `Up.Observer` | — | No | Resize / Intersection / Mutation |
-| [Screen](plugins/screen.md) | `Up.Screen` | — | No | Format `C` / `M` / `T` / `D` |
+| [Screen](plugins/screen.md) | `Up.Screen` | — | No | Format `C` / `M` / `T` / `D` ([hydration note](plugins/screen.md#hydration-mismatches)) |
 | [Transmitter](plugins/transmitter.md) | `Up.Transmitter` | — | No | Typed request/response channels |
 | [Scroll](plugins/scroll.md) | `Up.Scroll` | `lenis` | Yes | Smooth scroll (Lenis) |
 | [Anime](plugins/anime.md) | `Up.Anime` | `gsap` | Yes | GSAP integration |
