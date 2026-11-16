@@ -106,7 +106,7 @@ Expected (`document` missing). Use `Up.Adapter.setCookie` / `getCookie` / `destr
 
 ### Screen hydration mismatch / format wrong on first paint
 
-SSR seeds from cookie `upwwwards.plugins.screen.format` or `defaultFormat`. A default client `matchMedia` sync in `Up.set` can disagree before hydration and trip Vue / Svelte mismatches when you branch on `Up.Screen.get`. Mitigations: sensible `defaultFormat`, SSR [context](contexts.md), and `firstUpdateDelayed: true` to wait for `LIFE` (possible short flash). — [Screen — Hydration mismatches](plugins/screen.md#hydration-mismatches).
+SSR seeds from cookie `upwwwards.plugins.screen.format` or `defaultFormat`. A default client `matchMedia` sync in `Up.set` can disagree before hydration and trip Vue / Svelte mismatches when you branch on `Up.Screen.get`. Mitigations: sensible `defaultFormat`, SSR [context](contexts.md), and `firstUpdateDelayed: true` (defers to `LIFE` only when seed ≠ viewport; possible short flash). — [Screen — Hydration mismatches](plugins/screen.md#hydration-mismatches).
 
 ---
 
@@ -132,4 +132,4 @@ Use this `docs/` folder, the [README](../README.md), and [`llms.txt`](../llms.tx
 2. Confirm a single `Up.set` in the root layout, then an early `Up.Event.sub` (smoke: `LIFE` / `LOAD` in the console).  
 3. Check [concepts](concepts.md) for the page cycle.  
 4. Skim host-specific notes in [adapters](adapters.md).  
-5. Try an [Essentials recipe](recipes.md#essentials).  
+5. Try an [Essentials recipe](recipes.md#essentials).

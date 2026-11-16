@@ -104,7 +104,7 @@ plugins: [
 | Option | Default | Role |
 | --- | --- | --- |
 | `defaultFormat` | `'D'` | First visit / invalid cookie / no media match; also the SSR seed when nothing else is known |
-| `firstUpdateDelayed` | `false` | Defer the first `matchMedia` sync until `LIFE` (see below) |
+| `firstUpdateDelayed` | `false` | Defer the first sync until `LIFE` **only when** seed ≠ viewport (see below) |
 | `dimensions.*` | `435` / `768` / `1440` | Breakpoints in CSS px (`mobileWidth` must be ≤ `tabletWidth`) |
 
 `defaultFormat` should match the layout most of your audience sees on first paint.
@@ -128,10 +128,10 @@ By default (`firstUpdateDelayed: false`), `Up.set` immediately syncs with `match
 | --- | --- |
 | Sensible `defaultFormat` | Fewer first-visit surprises when there is no cookie yet |
 | Returning visitors + cookie | SSR usually already matches the last known format |
-| `firstUpdateDelayed: true` | Keeps cookie / `defaultFormat` through hydration; first `matchMedia` (+ resize modifier) runs on the first `LIFE` (skipped if `LIFE` already started, e.g. late re-`set`) |
+| `firstUpdateDelayed: true` | Defers only when seed ≠ `matchMedia`: keeps the seed through hydration, then syncs (+ resize modifier) on the first `LIFE`. If they already match, syncs immediately (no flash). Also syncs immediately if `LIFE` has already started (e.g. late re-`set`) |
 | Soft first paint | Prefer CSS that tolerates a short wrong format over hard `v-if` / `{#if}` swaps on critical chrome |
 
-Trade-off with `firstUpdateDelayed: true`: a possible **flash** between SSR paint and `LIFE` if the real viewport ≠ seed. Prefer that over a mismatch when format-driven markup is critical.
+Trade-off when deferral actually runs: a possible **flash** between SSR paint and `LIFE`. Prefer that over a mismatch when format-driven markup is critical.
 
 Wire the [SSR context](../contexts.md) so the server can read the cookie and keep a request-scoped store.
 
@@ -152,7 +152,7 @@ Wire the [SSR context](../contexts.md) so the server can read the cookie and kee
 
 **SSR:** the store is seeded from that cookie (or `defaultFormat`). Without a [context](../contexts.md), server cookie / store access is a no-op or unsafe.
 
-**Client sync:** default path updates in `Up.set`. With `firstUpdateDelayed: true` and before `Up.Event.PRE_LIFE`, Screen subscribes once to `LIFE`, then registers the Thread resize modifier and runs `matchMedia`. Later viewport changes stay on that resize modifier.
+**Client sync:** `Up.set` compares the seed (valid cookie, else `defaultFormat`) to `matchMedia`. Default path always updates immediately. With `firstUpdateDelayed: true`, if they differ and `LIFE` has not started (`Up.Event.PRE_LIFE`), Screen subscribes once to `LIFE`, then registers the Thread resize modifier and applies `matchMedia`; if they already match (or `LIFE` already started), it syncs immediately like the default path. Later viewport changes stay on that resize modifier.
 
 This is **layout-format** persistence, not the unused `hydrate` symbol in [symbols](../advanced/symbols.md).
 
@@ -163,4 +163,4 @@ This is **layout-format** persistence, not the unused `hydrate` symbol in [symbo
 - [Plugins index](../plugins.md)  
 - [Adapters](../adapters.md) — `AdapterRef`  
 - [Contexts](../contexts.md) — SSR store  
-- [FAQ — Screen hydration mismatch](../faq.md#screen-hydration-mismatch--format-wrong-on-first-paint)  
+- [FAQ — Screen hydration mismatch](../faq.md#screen-hydration-mismatch--format-wrong-on-first-paint)
