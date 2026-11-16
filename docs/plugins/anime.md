@@ -169,6 +169,21 @@ The trigger should be **taller than the viewport** (`100lvh`); otherwise the ran
 
 Native `onEnter` / `onUpdate` / `onRefresh` / … are **typed as `never`** — use the `e*` hooks.
 
+#### State
+
+| Getter | Role |
+| --- | --- |
+| `ready` | `true` after `set` / constructor `config`; `false` before configure and after `destroy`. Does **not** wait for the first ScrollTrigger refresh |
+| `progress` | Last notified scrub progress in `[0, 1]` |
+| `name` | Debug label (`config.name`, default `"Timeline"`) |
+
+```ts
+const timeline = new Timeline({ trigger: '.story', scrub: true })
+timeline.ready // true
+```
+
+Without config, `new Timeline()` stays unconfigured (`ready === false`) until `timeline.set({ … })`.
+
 #### Placement
 
 Four mutually exclusive forms (fractions `0`–`1`):
