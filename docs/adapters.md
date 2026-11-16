@@ -18,7 +18,7 @@ Up.Adapter.sub([['AFTER_NAVIGATE', () => {}]])
 
 ### Navigation phases
 
-Subscribe with `Up.Adapter.sub` / `unsub` — keep the same callback references for unsubscribe.
+Subscribe with `Up.Adapter.sub` / `unsub` — keep the same callback references for unsubscribe. **Browser-only:** calling them during SSR throws.
 
 | Phase | Meaning |
 | --- | --- |
@@ -65,11 +65,11 @@ Optional.
 
 | API | Role |
 | --- | --- |
-| `sub` / `unsub` | Navigation phases |
+| `sub` / `unsub` | Navigation phases (**browser-only**; SSR throws) |
 | `getRef` / `setRef` / `isRef` | Framework reactive refs |
 | `tick()` | Wait for framework DOM flush |
 | `setCookie` / `getCookie` / `destroyCookie` | Cookies (browser or SSR via [contexts](contexts.md)) |
-| `root` | App root element (from `rootSelector` or `body`) |
+| `root` | App root element (from `rootSelector` or `body`); `null` on the server / before `Up.set` |
 | `BROWSER` | `typeof window !== 'undefined'` |
 
 Refs: Vue `ref` on Nuxt · Svelte `writable` on SvelteKit.  
@@ -118,6 +118,8 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
 Optional. Exact sources of each phase — for debugging navigation.
+
+The navigation callback map is allocated only in the browser during `Up[construct]`. It is not created on the server, so SSR cannot accumulate `sub` listeners across requests.
 
 ### Nuxt (`adapter: 'nuxt'`)
 

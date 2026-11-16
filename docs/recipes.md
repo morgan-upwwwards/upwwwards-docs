@@ -200,14 +200,16 @@ Details: [adapters](adapters.md#host-caveats).
 Enable `Transmitter`, augment types, then:
 
 ```ts
-Up.Transmitter.sub({
-  channel: 'PING',
-  force: true,
-  receiver: (message: 'ping') => 'pong' as const
-})
+const ticket = {
+  channel: 'PING' as const,
+  force: true as const,
+  receiver: (message: 'ping'): 'pong' => 'pong'
+}
+
+Up.Transmitter.sub(ticket)
 
 const reply = Up.Transmitter.broadcast('PING', 'ping')
-Up.Transmitter.unsub({ channel: 'PING' })
+Up.Transmitter.unsub(ticket) // only `channel` is read
 ```
 
 [Transmitter](plugins/transmitter.md).

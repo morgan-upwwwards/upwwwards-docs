@@ -19,19 +19,22 @@ Typed **request / response channels** between parts of the app. Optional “chan
 ```ts
 import Up from 'upwwwards'
 
-Up.Transmitter.sub({
-  channel: 'PING',
-  receiver: (message: 'ping') => 'pong' as const
-})
+const ticket = {
+  channel: 'PING' as const,
+  force: true as const,
+  receiver: (message: 'ping'): 'pong' => 'pong'
+}
+
+Up.Transmitter.sub(ticket)
 
 const answer = Up.Transmitter.broadcast('PING', 'ping') // 'pong'
 
-Up.Transmitter.unsub({ channel: 'PING' })
+Up.Transmitter.unsub(ticket) // only `channel` is read
 ```
 
 - One receiver per channel; a new `sub` replaces the previous.  
-- `broadcast` is **client-only**.  
-- Keep the same patterns as Event: register a receiver, then broadcast.
+- `sub` / `getState` / `broadcast` / `unsub` work on **server and client**. On SSR, wire the [context](../contexts.md); channels stay **request-scoped** (`sub` and `broadcast` must share the same request).  
+- Await async `broadcast` results before the SSR request ends.
 
 Recipe: [recipes — Transmitter](../recipes.md#transmitter-channel).
 
@@ -40,8 +43,6 @@ Recipe: [recipes — Transmitter](../recipes.md#transmitter-channel).
 ## Going further
 
 > 🟡 **Going further** — optional. Safe to skip.
-
-Optional.
 
 ### Channel open state
 
@@ -84,15 +85,15 @@ declare module 'upwwwards/plugins/Transmitter'
 
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
-Optional.
-
 - Sync receivers run immediately. Native `async` functions get a serialized async broadcaster (`deadline` supported). A sync function that *returns* a `Promise` still uses the sync path.  
 - Extra ticket fields on `unsub` are ignored (only `channel` is read).  
-- `Transmitter.Config<TAsync, TMessage, TReturnCases>` — `returnCases` may be a plain type or `Transmitter.Switch<…>` when the return depends on the message key.
+- `Transmitter.Config<TAsync, TMessage, TReturnCases>` — `returnCases` may be a plain type or `Transmitter.Switch<…>` when the return depends on the message key.  
+- **Channel map:** browser singleton; SSR → `Context.STORE.transmitterManager` (one `Map` per request). Without a context on the server, APIs throw.
 
 ---
 
 ## See also
 
 - [Plugins index](../plugins.md)  
-- [Initializers — type augmentations](../initializers.md#generated-types-augmentations)  
+- [Contexts](../contexts.md) — SSR store  
+- [Initializers — type augmentations](../initializers.md#generated-types-augmentations)

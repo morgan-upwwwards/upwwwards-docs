@@ -44,8 +44,9 @@ Logs.reject(rej, 'MY_PLUGIN', 'FAILED') // rej('[MY_PLUGIN]: …')
 | --- | --- |
 | `mute` / `unmute` | Per-author silence for console methods only |
 | `reject(rej, author, message)` | Call a Promise reject callback with a tagged string |
+| `gateServer(author, message?)` | Throws on SSR (`window` missing); no-op after the first browser call |
 
-`throw` / `reject` are **never** muted.
+`throw` / `reject` / `gateServer` (on the server) are **never** muted.
 
 ---
 

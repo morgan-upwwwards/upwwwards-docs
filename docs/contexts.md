@@ -1,6 +1,6 @@
 # Contexts
 
-SSR **request context** so Adapter cookie helpers (and request-scoped stores such as `Up.App` cache / `Up.Screen`) work on the server.
+SSR **request context** so Adapter cookie helpers (and request-scoped stores such as `Up.App` cache / `Up.Screen` / `Up.Transmitter`) work on the server.
 
 Browser-only apps can skip this page entirely.
 
@@ -56,7 +56,7 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 
 Cookie option table: [adapters — Cookie options](adapters.md#cookie-options).
 
-Without a server context, server-side cookie / request-scoped cache calls are no-ops or unsafe.
+Without a server context, server-side cookie / request-scoped cache calls are no-ops or unsafe; `Up.Screen` / `Up.Transmitter` throw.
 
 Do **not** use `Cookies` from `upwwwards/scripts` on the server (`document` is missing); prefer the Adapter.
 
@@ -69,7 +69,8 @@ Do **not** use `Cookies` from `upwwwards/scripts` on the server (`document` is m
 Optional.
 
 - **Nuxt** — h3 cookie helpers on the current request event (`getCookie` / `setCookie` / `deleteCookie`).  
-- **SvelteKit** — `event.cookies` for the duration of `resolve`.
+- **SvelteKit** — `event.cookies` for the duration of `resolve`.  
+- **Store keys plugins may set:** `cache` (App), `screenStore` (Screen), `transmitterManager` (Transmitter), `lazyCaches` (Lazy).
 
 ---
 
@@ -79,3 +80,4 @@ Optional.
 - [Adapters](adapters.md)  
 - [Scripts — Cookies](scripts/cookies.md)  
 - [Plugins — Screen](plugins/screen.md)  
+- [Plugins — Transmitter](plugins/transmitter.md)

@@ -85,7 +85,7 @@ Call **`Up.set(…)` once** in the root layout (browser). Later calls are no-ops
 
 From app code you typically use:
 
-- `Up.Adapter.sub` / `unsub` — navigation phases (`BEFORE` / `ON` / `AFTER` / `ABORTED`)  
+- `Up.Adapter.sub` / `unsub` — navigation phases (`BEFORE` / `ON` / `AFTER` / `ABORTED`; browser-only, SSR throws)
 - Cookie helpers — browser or SSR via [contexts](contexts.md)  
 
 Full Adapter API: [adapters.md](adapters.md).
@@ -218,16 +218,19 @@ Each processed frame runs, in order: **drivers** → **modifiers** → **tasks b
 
 **Default `Thread.sub` is one-shot (flow)** — not a per-frame loop.
 
+**Browser-only scheduling:** `sub` / `addModifier` / `addDriver` throw during SSR (`DO NOT USE ON THE SERVER.`). `unsub` / `remove*` / `arm` / `wait` stay safe no-ops if nothing was scheduled.
+
 | API | Role |
 | --- | --- |
-| `Thread.sub(task, flag?, …args)` | Schedule a task (flow unless marked forever); arms modifiers of `flag` |
+| `Thread.sub(task, flag?, …args)` | Schedule a task (flow unless marked forever); arms modifiers of `flag` (**browser-only**) |
 | `Thread.unsub(task)` | Remove it |
 | `Thread.markForever(task)` | Mark **before** `sub` so it runs every frame |
 | `Thread.unmarkForever(task)` | Clear forever mark + unsub |
 | `Thread.wait(task)` | Promise when that task completes (or is unsub’d) |
-| `Thread.addModifier(cb, flag)` | Hook before tasks of a flag, once per frame when armed |
+| `Thread.addModifier(cb, flag)` | Hook before tasks of a flag, once per frame when armed (**browser-only**) |
+| `Thread.removeModifier(cb, flag)` | Remove a modifier |
 | `Thread.arm(flag)` | Arm modifiers of `flag` for the next modifiers phase (no task) |
-| `Thread.addDriver(cb)` | Hook at the **start** of every frame (before modifiers) |
+| `Thread.addDriver(cb)` | Hook at the **start** of every frame (before modifiers) (**browser-only**) |
 | `Thread.removeDriver(cb)` | Remove a driver |
 | `Thread.timestamp` / `delta` | Current frame time / delta |
 | `Thread.DEFAULT_FLAG` | `8192` — **default flag** of `Thread.sub` |
@@ -306,6 +309,6 @@ Deep imports exist for Transmitter / Scroll / Anime / Puppeteer / Synthra — no
 
 ## See also
 
-- [Concepts](concepts.md) · [FAQ](faq.md) · [Recipes](recipes.md)  
-- [Getting started](getting-started.md) · [Documentation index](index.md)  
-- [Adapters](adapters.md) · [Initializers](initializers.md) · [Symbols](advanced/symbols.md)  
+- [Concepts](concepts.md) · [FAQ](faq.md) · [Recipes](recipes.md)
+- [Getting started](getting-started.md) · [Documentation index](index.md)
+- [Adapters](adapters.md) · [Initializers](initializers.md) · [Symbols](advanced/symbols.md)

@@ -34,7 +34,21 @@ const $mobile = Up.Screen.get('M')  // AdapterRef<boolean>
 const $desktop = Up.Screen.get('D')
 ```
 
-`get` works on server and client. On the server, wire the [SSR context](../contexts.md) so the store is request-scoped.
+`get` works on server and client. On the server, wire the [SSR context](../contexts.md) so the store is request-scoped (throws without a context).
+
+### React to format changes
+
+```ts
+function onFormat(format: 'C' | 'M' | 'T' | 'D') {
+  /* … */
+}
+
+Up.Screen.sub(onFormat)
+// later
+Up.Screen.unsub(onFormat)
+```
+
+**Browser-only** (`sub` / `unsub` throw during SSR). Callbacks run on a Thread resize-flag task after the store updates (not synchronously inside the updater). Same function reference required for `unsub`.
 
 ### Nuxt / Vue — unwrap the ref in the template
 
@@ -150,9 +164,9 @@ Wire the [SSR context](../contexts.md) so the server can read the cookie and kee
 | First visit / invalid cookie | Uses `defaultFormat` (config; default `'D'`) |
 | Secure flag | `true` on HTTPS (and on the server); `false` on plain HTTP so local HTTP still stores the cookie |
 
-**SSR:** the store is seeded from that cookie (or `defaultFormat`). Without a [context](../contexts.md), server cookie / store access is a no-op or unsafe.
+**SSR:** the store is seeded from that cookie (or `defaultFormat`). Without a [context](../contexts.md), `get` / store access **throws**. The format-change callstack is not allocated on the server; `sub` / `unsub` throw.
 
-**Client sync:** `Up.set` compares the seed (valid cookie, else `defaultFormat`) to `matchMedia`. Default path always updates immediately. With `firstUpdateDelayed: true`, if they differ and `LIFE` has not started (`Up.Event.PRE_LIFE`), Screen subscribes once to `LIFE`, then registers the Thread resize modifier and applies `matchMedia`; if they already match (or `LIFE` already started), it syncs immediately like the default path. Later viewport changes stay on that resize modifier.
+**Client sync:** `Up.set` compares the seed (valid cookie, else `defaultFormat`) to `matchMedia`. Default path always updates immediately. With `firstUpdateDelayed: true`, if they differ and Event status does **not** include `Up.Event.PRE_LIFE` (LIFE has not started), Screen subscribes once to `LIFE`, then registers the Thread resize modifier and applies `matchMedia`; if they already match (or `LIFE` already started / `PRE_LIFE` set), it syncs immediately like the default path. Later viewport changes stay on that resize modifier. Each format change also schedules `sub` callbacks via a Thread task on the resize flag.
 
 This is **layout-format** persistence, not the unused `hydrate` symbol in [symbols](../advanced/symbols.md).
 

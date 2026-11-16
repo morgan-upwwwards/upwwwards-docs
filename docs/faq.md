@@ -40,7 +40,7 @@ Run Vite once so the plugin can write `private/types/upwwwards.d.ts`. Augment ap
 
 ### Do I need the SSR context?
 
-Only if you use Adapter cookies or request-scoped stores (`Up.App` cache, `Up.Screen`, …) on the server. Browser-only apps can skip it.
+Only if you use Adapter cookies or request-scoped stores (`Up.App` cache, `Up.Screen`, `Up.Transmitter`, …) on the server. Browser-only apps can skip it.
 
 → [contexts](contexts.md)
 
@@ -53,6 +53,14 @@ Only if you use Adapter cookies or request-scoped stores (`Up.App` cache, `Up.Sc
 `DEATH` runs on Adapter **`ON_NAVIGATE`**. Soft cancellations that never commit the nav do not emit it. Hard failures after start emit **`ABORTED`** instead of `AFTER` / `LIFE` / `LOAD`.
 
 **First load / hard refresh** also has no `DEATH` — only `LIFE` / `LOAD`. See [getting-started](getting-started.md#first-load-note).
+
+### `Up.Adapter.sub` / `unsub` on the server
+
+Client-only. Calling them during SSR throws (`DO NOT USE ON THE SERVER.`). Prefer `Up.Event` for page enter/leave, and call Adapter navigation APIs from browser code after `Up.set`. — [adapters](adapters.md#navigation-phases).
+
+### `Up.Thread.sub` / `addModifier` / `addDriver` on the server
+
+Same idea: the frame loop is browser-only; those APIs throw during SSR. Removals (`unsub`, `removeDriver`, …) are harmless no-ops if nothing was registered. — [core — Thread](core.md#upthread--when-tick-is-not-enough).
 
 ### `LIFE` / `LOAD` skipped after a failed navigation
 
@@ -107,6 +115,10 @@ Expected (`document` missing). Use `Up.Adapter.setCookie` / `getCookie` / `destr
 ### Screen hydration mismatch / format wrong on first paint
 
 SSR seeds from cookie `upwwwards.plugins.screen.format` or `defaultFormat`. A default client `matchMedia` sync in `Up.set` can disagree before hydration and trip Vue / Svelte mismatches when you branch on `Up.Screen.get`. Mitigations: sensible `defaultFormat`, SSR [context](contexts.md), and `firstUpdateDelayed: true` (defers to `LIFE` only when seed ≠ viewport; possible short flash). — [Screen — Hydration mismatches](plugins/screen.md#hydration-mismatches).
+
+### `Up.Screen.sub` on the server
+
+Browser-only (throws during SSR). Use `Up.Screen.get` for SSR markup; subscribe to format changes in client code. — [Screen](plugins/screen.md#react-to-format-changes).
 
 ---
 
