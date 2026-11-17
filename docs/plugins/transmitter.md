@@ -33,7 +33,7 @@ Up.Transmitter.unsub(ticket) // only `channel` is read
 ```
 
 - One receiver per channel; a new `sub` replaces the previous.  
-- `sub` / `getState` / `broadcast` / `unsub` work on **server and client**. On SSR, wire the [context](../contexts.md); channels stay **request-scoped** (`sub` and `broadcast` must share the same request).  
+- `sub` / `getState` / `isOnline` / `broadcast` / `unsub` work on **server and client**. On SSR, wire the [context](../contexts.md); channels stay **request-scoped** (`sub` and `broadcast` must share the same request).  
 - Await async `broadcast` results before the SSR request ends.
 
 Recipe: [recipes — Transmitter](../recipes.md#transmitter-channel).
@@ -48,9 +48,12 @@ Recipe: [recipes — Transmitter](../recipes.md#transmitter-channel).
 
 ```ts
 const $open = Up.Transmitter.getState('PING') // AdapterRef<boolean> — true while a receiver is registered
+const online = Up.Transmitter.isOnline('PING') // boolean snapshot — true while a receiver is registered
 ```
 
-`unsub` closes the channel but keeps `getState` refs valid.
+- `getState` — reactive ref; creates the channel closed if it does not exist yet.  
+- `isOnline` — one-shot boolean; does **not** create the channel (missing → `false`).  
+- `unsub` closes the channel but keeps `getState` refs valid.
 
 ### Ticket options
 
