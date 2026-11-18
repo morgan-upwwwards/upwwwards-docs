@@ -10,7 +10,7 @@ Smooth scrolling via **[Lenis](https://github.com/darkroomengineering/lenis)**, 
 | **Lazy** | yes — Lenis loads on first `workspace` / first need |
 | **Config** | none in the Vite plugin today (Lenis constructed with `{ autoRaf: false }` only) |
 
-> **Warning — do not import `lenis` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use Lenis only through `Up.Scroll` APIs (`to`, `stop`, `start`, `workspace`, …) — access is often asynchronous until the peer has loaded.
+> **Warning — do not import `lenis` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use Lenis only through `Up.Scroll` APIs (`to`, `stop`, `start`, `workspace`, …) — access is asynchronous until the first load **and** its callback queue flush both finish (then `workspace` is sync).
 
 **Levels:** 🟢 [Essentials](#essentials) (start here) · 🟡 [Going further](#going-further) (optional) · ⬛ [Under the hood](#under-the-hood) (optional)
 
@@ -74,6 +74,7 @@ Up.Scroll.workspace(({ Lenis, global }) => {
 Optional.
 
 - First **`LIFE`** → plugin calls `workspace` internally so Lenis starts loading (even if you never call `Up.Scroll` yourself).  
+- Lazy timing: queued `workspace` callbacks flush on `Up.Thread` after load; sync fast-path only after that flush (returned promise / `App.addWait` cover both).  
 - **`LOAD`** → Thread **driver** advances Lenis each frame (`autoRaf: false`); Lenis `scroll` arms flag `32` so scroll modifiers (`App.updateScrollVars`, ScrollTrigger, …) run before tasks.  
 - Client-only. Peer required on first real use — [FAQ](../faq.md#missing-peer-gsap--lenis--three).
 

@@ -182,6 +182,24 @@ Up.Adapter.sub([['ABORTED', teardown]])
 
 Also: [README showcase](../README.md#showcase-anime) · [Anime](plugins/anime.md).
 
+### Spread heavy Anime setup across frames
+
+Same workspace key, several callbacks — one `sub` per Thread step:
+
+```ts
+const KEY = Symbol('HeavyPage')
+
+await Up.Anime.spread(KEY, [
+  ({ gsap }) => { /* chunk A */ },
+  ({ gsap }) => { /* chunk B */ },
+  ({ Timeline }) => { /* chunk C */ }
+])
+
+Up.Event.sub([['DEATH', () => Up.Anime.unsub(KEY)]])
+```
+
+Details: [Anime — spread](plugins/anime.md#spread--stepped-sub).
+
 ### Nuxt `pageTransition` + lifecycle
 
 With `app.pageTransition` (or page meta / `NuxtPage` transition), `AFTER_NAVIGATE` / `LIFE` still run when the new page is ready — including under `out-in`. No extra wiring beyond `Up.set({ nuxtApp: useNuxtApp() })` in the root layout.

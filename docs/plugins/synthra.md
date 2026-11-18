@@ -10,7 +10,7 @@ Optional **Three.js** plugin for a shared WebGL scene on top of the upwwwards fr
 | **Lazy** | yes — nothing loads until the first `workspace` call |
 | **Scope** | client-only (`workspace` throws on the server) |
 
-> **Warning — do not import `three` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use Three.js only through `Up.Synthra` APIs (`workspace`, and the `three` / `X3D` / `Package` / `Plugin` handles it provides) — access is asynchronous until the peer has loaded.
+> **Warning — do not import `three` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use Three.js only through `Up.Synthra` APIs (`workspace`, and the `three` / `X3D` / `Package` / `Plugin` handles it provides) — access is asynchronous until the first load **and** its callback queue flush both finish (then `workspace` is sync).
 
 **Levels:** 🟢 [Essentials](#essentials) (start here) · 🟡 [Going further](#going-further) (optional) · ⬛ [Under the hood](#under-the-hood) (optional)
 
@@ -153,6 +153,7 @@ Augment `SynthraBucket` / `SynthraPlugins`: [initializers](../initializers.md#ge
 Optional.
 
 - Camera `aspect` is a **multiplier** on `Up.App.lw / Up.App.lh`, not an absolute aspect ratio.  
+- Lazy timing: first `workspace` loads Three.js, flushes queued callbacks on `Up.Thread`, then installs the sync fast-path (returned promise / `App.addWait` cover load **and** flush).  
 - Each frame (after load): X3D evaluate → fixed → animate → plugin ticks → render (Thread flag `2048`).  
 - **One Spider / shared canvas** per runtime. Multiple independent canvases are not first-class.  
 - Attachments (`addAttachment` / eternal) — see JSDoc on `X3D`.  

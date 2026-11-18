@@ -61,7 +61,7 @@ Up.Screen.get('M')
 
 Plugins with a **peer** need that package installed — see the [FAQ](faq.md#missing-peer-gsap--lenis--three).
 
-> **Warning:** for lazy peers (`gsap`, `lenis`, `three`), install the package but **do not** `import` it at runtime yourself (TypeScript `import type` is fine). Use only the plugin APIs (`Up.Anime`, `Up.Scroll`, `Up.Synthra`, …) so Vite keeps the optimized lazy graph. Access is often asynchronous until first use.
+> **Warning:** for lazy peers (`gsap`, `lenis`, `three`), install the package but **do not** `import` it at runtime yourself (TypeScript `import type` is fine). Use only the plugin APIs (`Up.Anime`, `Up.Scroll`, `Up.Synthra`, …) so Vite keeps the optimized lazy graph. Access is asynchronous until the first load and its callback-queue flush both finish.
 
 ---
 
@@ -72,6 +72,8 @@ Plugins with a **peer** need that package installed — see the [FAQ](faq.md#mis
 ### Lazy plugins
 
 **Lazy** plugins load their heavy dependency on first real use (e.g. first `workspace` / first `LIFE`), not at `Up.set`. Scroll, Anime, and Synthra are lazy; their peers (`lenis`, `gsap`, `three`) are only imported at that point — through the plugin, not via a direct app import.
+
+Until that first load **and** the Thread flush of queued `workspace` callbacks both finish, further `workspace` / `sub` calls stay queued (including calls made during the flush). Only then is `workspace` rewritten to a sync fast-path. The promise returned by `workspace` (and registered with `App.addWait`) covers load **and** flush.
 
 ### Naming notes
 

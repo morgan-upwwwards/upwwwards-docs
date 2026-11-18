@@ -1,6 +1,6 @@
 # Anime — GSAP plugin
 
-**GSAP integration** for upwwwards: named workspaces (`sub` / `unsub`), optional GSAP plugins, and helpers (`Timeline`, `Tweens`, `Split`). Not related to anime.js.
+**GSAP integration** for upwwwards: named workspaces (`sub` / `unsub` / `spread`), optional GSAP plugins, and helpers (`Timeline`, `Tweens`, `Split`). Not related to anime.js.
 
 | | |
 | --- | --- |
@@ -9,7 +9,7 @@
 | **Peer** | `gsap` |
 | **Lazy** | yes — GSAP (+ listed plugins) load on first `workspace` / `sub` |
 
-> **Warning — do not import `gsap` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use GSAP only through `Up.Anime` APIs (`sub`, `workspace`, …) — access is often asynchronous until the peer has loaded.
+> **Warning — do not import `gsap` yourself** (except TypeScript `import type`). Manual runtime imports bypass the Vite lazy graph and can break build-time optimization. Use GSAP only through `Up.Anime` APIs (`sub`, `spread`, `workspace`, …) — access is asynchronous until the first load **and** its callback queue flush both finish (then `workspace` / `sub` are sync).
 
 **Levels:** 🟢 [Essentials](#essentials) (start here) · 🟡 [Going further](#going-further) (optional) · ⬛ [Under the hood](#under-the-hood) (optional)
 
@@ -94,6 +94,23 @@ Inside `sub`, the callback receives:
 `workspace(cb)` runs against the loaded bucket without opening a keyed scope (or with an empty workspace object outside `sub`).
 
 Do not put custom data under reserved keys `ctx` / `cleaningStack`.
+
+### `spread` — stepped `sub`
+
+When one workspace needs several heavy setup callbacks, `spread` calls `sub` once per Thread step (same `key`, optional `$guard` / `flag`) so work is spread across frames instead of blocking one.
+
+```ts
+await Up.Anime.spread(KEY, [
+  ({ gsap }) => { gsap.set('.a', { opacity: 0 }) },
+  ({ gsap }) => { gsap.to('.a', { opacity: 1, duration: 0.5 }) },
+  ({ Timeline }) => { /* … */ }
+])
+
+// later / on leave
+Up.Anime.unsub(KEY)
+```
+
+The returned promise waits until every chunk has been issued; if GSAP was still loading, it also waits for that load and its queue flush. After the sync fast-path, it settles when the last stepped `sub` has run.
 
 ### Helper: `Tweens`
 
@@ -242,6 +259,8 @@ With Lenis: [Scroll — Going further](scroll.md#with-anime--scrolltrigger).
 > ⬛ **Under the hood** — internals / debug. Safe to skip.
 
 - The Vite plugin rewrites Anime `plugins` into dynamic `import('gsap/<Name>')` loaders and augments bucket types.  
+- Lazy timing: first `workspace` / `sub` loads GSAP, queues callbacks, flushes them on `Up.Thread`, then installs the sync fast-path; the returned promise / `App.addWait` covers load **and** flush.  
+- `spread` schedules a flow generator on Thread: one `sub` per step, then resolves from the last `sub` return value (Lazy `WAIT` while loading, otherwise immediate).  
 - Clock: GSAP’s ticker drives `Up.Thread`, or — if Thread already has an external ticker — GSAP sleeps and `gsap.updateRoot` runs as a forever Thread task on **`MAX_FLAG` (`32768`)** (after drivers, modifiers, and lower-flag tasks).  
 - With **Scroll** enabled, Lenis arms flag `32` so ScrollTrigger modifiers stay in sync without a manual Lenis `scroll` listener.  
 - `unsub` runs `cleaningStack` in reverse, then `ctx.revert()`.  
