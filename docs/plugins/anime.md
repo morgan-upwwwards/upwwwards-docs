@@ -31,7 +31,7 @@ Install `gsap`, restart Vite. Add GSAP plugins / easings when you need them — 
 
 ### Workspaces
 
-Use one **symbol key** per component (or logical scope). Everything created synchronously inside `sub` is tracked in a GSAP context and cleaned on `unsub`.
+Use one **symbol key** per component (or logical scope). Everything created synchronously inside `sub` is tracked in a GSAP context and cleaned on `unsub` (which also cancels any in-flight `spread` for that key).
 
 ```ts
 import Up from 'upwwwards'
@@ -93,11 +93,11 @@ Inside `sub`, the callback receives:
 
 `workspace(cb)` runs against the loaded bucket without opening a keyed scope (or with an empty workspace object outside `sub`).
 
-Do not put custom data under reserved keys `ctx` / `cleaningStack`.
+Do not put custom data under reserved keys `ctx` / `cleaningStack` / `tasks`.
 
 ### `spread` — stepped `sub`
 
-When one workspace needs several heavy setup callbacks, `spread` calls `sub` once per Thread step (same `key`, optional `$guard` / `flag`) so work is spread across frames instead of blocking one.
+When one workspace needs several heavy setup callbacks, `spread` calls `sub` once per Thread step (same `key`, optional `$guard` / `flag`) so work is spread across frames instead of blocking one. The stepper is registered on the workspace so `unsub(key)` cancels it (remaining chunks never run; the `await` still settles).
 
 ```ts
 await Up.Anime.spread(KEY, [
@@ -106,11 +106,11 @@ await Up.Anime.spread(KEY, [
   ({ Timeline }) => { /* … */ }
 ])
 
-// later / on leave
+// later / on leave — also stops an in-flight spread for KEY
 Up.Anime.unsub(KEY)
 ```
 
-The returned promise waits until every chunk has been issued; if GSAP was still loading, it also waits for that load and its queue flush. After the sync fast-path, it settles when the last stepped `sub` has run.
+The returned promise waits until every chunk has been issued; if GSAP was still loading, it also waits for that load and its queue flush. After the sync fast-path, it settles when the last stepped `sub` has run (or sooner if `unsub` cancels the stepper).
 
 ### Helper: `Tweens`
 
@@ -260,10 +260,10 @@ With Lenis: [Scroll — Going further](scroll.md#with-anime--scrolltrigger).
 
 - The Vite plugin rewrites Anime `plugins` into dynamic `import('gsap/<Name>')` loaders and augments bucket types.  
 - Lazy timing: first `workspace` / `sub` loads GSAP, queues callbacks, flushes them on `Up.Thread`, then installs the sync fast-path; the returned promise / `App.addWait` covers load **and** flush.  
-- `spread` schedules a flow generator on Thread: one `sub` per step, then resolves from the last `sub` return value (Lazy `WAIT` while loading, otherwise immediate).  
+- `spread` schedules a flow generator on Thread (stored on the workspace): one `sub` per step, then resolves from the last `sub` return value (Lazy `WAIT` while loading, otherwise immediate).  
 - Clock: GSAP’s ticker drives `Up.Thread`, or — if Thread already has an external ticker — GSAP sleeps and `gsap.updateRoot` runs as a forever Thread task on **`MAX_FLAG` (`32768`)** (after drivers, modifiers, and lower-flag tasks).  
 - With **Scroll** enabled, Lenis arms flag `32` so ScrollTrigger modifiers stay in sync without a manual Lenis `scroll` listener.  
-- `unsub` runs `cleaningStack` in reverse, then `ctx.revert()`.  
+- `unsub` cancels that key’s `spread` Thread tasks, runs `cleaningStack` in reverse, then `ctx.revert()`.  
 - Helpers created inside `sub` push destroyers onto `workspace.cleaningStack`.  
 - **`Timeline` refresh gate:** track/`eUpdate` handling is deferred until the first ScrollTrigger `onRefresh` has rebuilt bounds (tracks added before `set()` start at `[0, 0]`). If GSAP already advanced scrub progress during that first refresh, Timeline catch-up runs right after `eRefresh` so skipped leave/enter stay consistent on history restore.
 

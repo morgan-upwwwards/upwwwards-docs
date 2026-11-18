@@ -195,6 +195,7 @@ await Up.Anime.spread(KEY, [
   ({ Timeline }) => { /* chunk C */ }
 ])
 
+// Cancels an in-flight spread for KEY as well as the workspace
 Up.Event.sub([['DEATH', () => Up.Anime.unsub(KEY)]])
 ```
 
