@@ -28,7 +28,7 @@ Subscribe with `Up.Adapter.sub` / `unsub` — keep the same callback references 
 | `ABORTED` | Nav failed after the cycle started — no `AFTER` |
 
 **Success:** `BEFORE` → `ON` → `AFTER`.  
-**Failure after start:** `ABORTED` instead of `AFTER`.
+**Failure after start:** `ABORTED` instead of `AFTER` (Vue Router cancel / supersede). On Nuxt, a page/fatal error still emits `AFTER` via `$error`.
 
 **First load / hard refresh:** only `AFTER` (no `BEFORE` / `ON`). Details: [getting-started](getting-started.md#first-load-note).
 
@@ -36,11 +36,11 @@ Event lifecycle: [core — Essentials](core.md#essentials).
 
 ### `Up.set` config by host
 
-**Nuxt** — `{ nuxtApp, rootSelector? }` once in a root layout `<script setup>`.
+**Nuxt** — `{ nuxtApp, $error, rootSelector? }` once in a root layout `<script setup>`.
 
 ```ts
-Up.set({ nuxtApp: useNuxtApp() })
-// or: Up.set({ nuxtApp: useNuxtApp(), rootSelector: '#app' })
+Up.set({ nuxtApp: useNuxtApp(), $error: useError() })
+// or: Up.set({ nuxtApp: useNuxtApp(), $error: useError(), rootSelector: '#app' })
 ```
 
 **SvelteKit** — `{ beforeNavigate, onNavigate, afterNavigate, rootSelector? }`  
@@ -107,7 +107,7 @@ Up.Adapter.destroyCookie('theme', { path: '/' })
 
 ### Host caveats
 
-**Nuxt:** call `Up.set({ nuxtApp: useNuxtApp() })` in a layout/setup context. Route middleware that aborts **before** the adapter has wired navigation never starts the Adapter cycle (no `BEFORE` / `ABORTED`). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
+**Nuxt:** call `Up.set({ nuxtApp: useNuxtApp(), $error: useError() })` in a layout/setup context. `$error` is required: when a page/fatal error skips `page:finish`, the adapter still emits `AFTER_NAVIGATE` so the cycle is not stuck. Route middleware that aborts **before** the adapter has wired navigation never starts the Adapter cycle (no `BEFORE` / `ABORTED`). Guards registered *after* `Up.set` can abort after `BEFORE`/`ON`.
 
 **Nuxt + `pageTransition`:** `AFTER_NAVIGATE` / `LIFE` wait until the new page is ready for work — including when you use page transitions (e.g. `out-in`). No extra app code required.
 
@@ -126,8 +126,8 @@ The navigation callback map is allocated only in the browser during `Up[construc
 | Phase | Source |
 | --- | --- |
 | `BEFORE` + `ON` | Client path change (wired by the adapter) |
-| `AFTER` | New page ready (respects `pageTransition` when configured) |
-| `ABORTED` | Failed navigation after the cycle started |
+| `AFTER` | New page ready (`page:finish`, respects `pageTransition`) or Nuxt `useError()` when that skips `page:finish` |
+| `ABORTED` | Vue Router navigation failure after the cycle started |
 
 ### SvelteKit (`adapter: 'svelte'`)
 

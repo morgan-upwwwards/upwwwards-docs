@@ -203,7 +203,7 @@ Details: [Anime — spread](plugins/anime.md#spread--stepped-sub).
 
 ### Nuxt `pageTransition` + lifecycle
 
-With `app.pageTransition` (or page meta / `NuxtPage` transition), `AFTER_NAVIGATE` / `LIFE` still run when the new page is ready — including under `out-in`. No extra wiring beyond `Up.set({ nuxtApp: useNuxtApp() })` in the root layout.
+With `app.pageTransition` (or page meta / `NuxtPage` transition), `AFTER_NAVIGATE` / `LIFE` still run when the new page is ready — including under `out-in`. No extra wiring beyond `Up.set({ nuxtApp: useNuxtApp(), $error: useError() })` in the root layout.
 
 ```ts
 Up.Event.sub([

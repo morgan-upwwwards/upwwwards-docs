@@ -73,13 +73,13 @@ Call it once in the browser. A second call is a no-op.
 
 ### Nuxt — e.g. `app/layouts/default.vue`
 
-Call once in the layout’s `<script setup>`. Pass the Nuxt app from `useNuxtApp()` (optional `rootSelector` for a custom app root).
+Call once in the layout’s `<script setup>`. Pass `nuxtApp` from `useNuxtApp()` and `$error` from `useError()` (optional `rootSelector` for a custom app root).
 
 ```vue
 <script lang="ts" setup>
 import Up from 'upwwwards'
 
-Up.set({ nuxtApp: useNuxtApp() })
+Up.set({ nuxtApp: useNuxtApp(), $error: useError() })
 </script>
 
 <template>
